@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACIC - Melhores do Ano 2024</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Link para o CSS da biblioteca intl-tel-input -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+    <!-- Seu arquivo CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Banner de notificação -->
+    <div id="notificationBanner" class="notification hidden"></div>
+
+    <div class="login-container" style="min-height: 550px;">
+        <!-- Adicionando a imagem ao topo -->
+        <img src="logo.png" alt="Logo Principal" class="logo-main" style="width: 120px; margin-bottom: 20px;">
+        
+        <!-- Exibe a saudação -->
+        <div id="nomePessoa" class="nome" style="margin-bottom: 20px;"></div>
+
+        <!-- Formulário de Nome, Sobrenome e Telefone -->
+        <div class="login-box">
+            <form id="nameForm">
+                <label for="nome" class="label-text">Nome</label>
+                <input type="text" id="nome" class="input-field" placeholder="Digite seu Nome">
+
+                <label for="sobrenome" class="label-text">Sobrenome</label>
+                <input type="text" id="sobrenome" class="input-field" placeholder="Digite seu Sobrenome">
+
+                <!-- Novo campo de Telefone -->
+                <label for="telefone" class="label-text">Telefone</label>
+                <input type="tel" id="telefone" class="input-field" placeholder="Digite seu Telefone">
+
+                <!-- Mensagem de informação sobre o telefone -->
+                <div id="telefoneInfo" class="telefone-info">
+                    Por favor, insira um telefone que possa receber SMS.
+                </div>
+
+                <!-- Botão de enviar com espaçamento -->
+                <button type="submit" class="btn-primary" id="btnEnviar" style="margin-top: 20px;">
+                    <span id="btnText">Enviar SMS</span>
+                    <div id="spinner" class="spinner hidden"></div>
+                    <div id="checkmark" class="checkmark hidden">
+                        <svg viewBox="0 0 52 52">
+                            <path d="M14 27 l10 10 l14 -14" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+                        </svg>
+                    </div>
+                </button>
+
+                <!-- Link de contato com estilo e hover dourado -->
+                <p class="contact-link">
+                    <a href="mailto:contato@empresa.com">Entre em contato caso tenha dúvidas.</a>
+                </p>                
+            </form>
+        </div>
+    </div>
+
+    <!-- Script para validar o acesso e inicializar o campo de telefone -->
+    <script>
+        // Verifica se o CPF foi validado antes de permitir o acesso e se a validação tem menos de 10 minutos
+        const cpfValidado = sessionStorage.getItem("cpfValidado");
+        const validacaoTime = sessionStorage.getItem("validacaoTime");
+        const agora = new Date().getTime();
+
+        if (!cpfValidado || !validacaoTime || (agora - validacaoTime) > 10 * 60 * 1000) { // 10 minutos em milissegundos
+            alert("Validação expirada. Por favor, valide seu CPF novamente.");
+            sessionStorage.clear(); // Limpa o sessionStorage se expirar
+            window.location.href = "index_base.html";
+        }
+
+        // Exibe a saudação e o nome da empresa ou pessoa
+        const nomePessoa = sessionStorage.getItem("nomePessoa") || '';
+        const empresaPessoa = sessionStorage.getItem("empresaPessoa") || '';
+        const saudacao = sessionStorage.getItem("saudacao") || '';
+
+        // Exibe a saudação com nome ou empresa, sem repetição
+        let saudacaoTexto = saudacao;
+        if (empresaPessoa) {
+            saudacaoTexto += `, ${empresaPessoa}!`;
+        } else if (nomePessoa) {
+            saudacaoTexto += `, ${nomePessoa}!`;
+        } else {
+            saudacaoTexto += "!";
+        }
+
+        document.getElementById("nomePessoa").textContent = saudacaoTexto;
+    </script>
+
+    <!-- Include the CSS of the intl-tel-input library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+
+    <!-- Include the JavaScript of the intl-tel-input library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"></script>
+
+    <!-- Your custom script -->
+    <script src="script_form.js"></script>
+</body>
+</html>

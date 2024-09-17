@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleção de Candidatos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style_new.css">
+</head>
+<body>
+    <div class="candidate-container">
+        <h2>Selecione o seu candidato</h2>
+        <div class="candidate-grid" id="candidateGrid">
+            <!-- Os cards dos candidatos serão inseridos aqui pelo JavaScript -->
+        </div>
+        <!-- Botão para confirmar a seleção -->
+        <button class="btn-primary" id="confirmButton" disabled>Confirmar Seleção</button>
+    </div>
+
+    <!-- Caixa de diálogo modal de confirmação -->
+    <div id="confirmationModal" class="modal hidden">
+        <div class="modal-content">
+            <p>Você deseja confirmar o seu voto no candidato <span id="selectedCandidateName"></span>?</p>
+            <div class="modal-buttons">
+                <button id="confirmVoteButton" class="btn-primary">Confirmar</button>
+                <button id="cancelVoteButton" class="btn-secondary">Escolher outro candidato</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Animação de sucesso em tela cheia -->
+    <div id="successAnimation" class="success-animation hidden">
+        <img id="candidateImage" src="" alt="Candidato Selecionado">
+        <div class="success-message">
+            <h2>Voto Confirmado!</h2>
+            <!-- Botão discreto para voltar ao início -->
+            <button id="backButton" class="btn-back">Voltar ao Início</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script_candidates.js"></script>
+</body>
+</html>
