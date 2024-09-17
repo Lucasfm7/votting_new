@@ -1,0 +1,8 @@
+[services]
+  name = "fasthtml-server"
+  [services.static]
+  path = "/"
+  root = "."
+
+[env]
+  NODE_ENV = "production"
