@@ -18,7 +18,7 @@ function showNotification(message) {
 
 // Função para realizar a requisição GET com o CPF
 async function fetchPersonByCpf(cpf) {
-    const baseUrl = "http://django-server-production-f3c5.up.railway.app/pessoas/pesquisar_cpf/";
+    const baseUrl = "https://django-server-production-f3c5.up.railway.app/pessoas/pesquisar_cpf/";
     const params = { cpf: cpf.replace(/\D/g, '') }; // Remove a formatação e envia apenas números
 
     try {
@@ -27,10 +27,16 @@ async function fetchPersonByCpf(cpf) {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
+                'Origin': window.location.origin,  // Inclui a origem da requisição
             },
         });
 
         if (!response.ok) {
+            if (response.status === 403) {
+                showNotification("Acesso negado. Verifique suas permissões ou se o CSRF está correto.");
+            } else {
+                showNotification(`Erro HTTP! Status: ${response.status}`);
+            }
             throw new Error(`Erro HTTP! Status: ${response.status}`);
         }
 
@@ -38,7 +44,8 @@ async function fetchPersonByCpf(cpf) {
         return data;
 
     } catch (error) {
-        showNotification("Erro ao buscar CPF. Tente novamente.");
+        console.error("Erro ao realizar a requisição:", error);
+        showNotification(`Erro ao buscar CPF. Status: ${error.message}`);
         return null;
     }
 }
