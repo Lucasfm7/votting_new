@@ -1,130 +1,149 @@
-// Simula o código de verificação enviado (por exemplo, 123456)
-const codigoEnviado = "123456";
+// Função para exibir a notificação com esmaecimento
+function showNotification(message) {
+    const notificationBanner = document.getElementById("notificationBanner");
+    notificationBanner.textContent = message;
+    notificationBanner.classList.remove("hidden");
+    notificationBanner.classList.add("show");
 
-// Função para verificar o código inserido
-function verificarCodigo() {
-    const codigoInserido = Array.from(document.querySelectorAll(".code-input"))
-        .map(input => input.value)
-        .join("");
-
-    if (codigoInserido.length === 6 && codigoInserido === codigoEnviado) {
-        showSuccess();
+    // Esconder o banner após 3 segundos com fade-out
+    setTimeout(() => {
+        notificationBanner.classList.remove("show");
+        notificationBanner.classList.add("hide");
         setTimeout(() => {
-            window.location.href = "index_candidates.html"; // Redireciona para a página de seleção de candidatos
-        }, 1000);
-    } else if (codigoInserido.length === 6) {
-        alert("Código incorreto. Tente novamente.");
+            notificationBanner.classList.add("hidden");
+            notificationBanner.classList.remove("hide");
+        }, 500); // Tempo para o fade-out
+    }, 3000);
+}
+
+// Função para inicializar o input de telefone com intl-tel-input (se necessário)
+function initializeTelephoneInput() {
+    const telefone = sessionStorage.getItem("telefone");
+    const phoneInfo = document.getElementById("phoneInfo");
+    const backButton = document.getElementById("backButton");
+
+    if (telefone) {
+        // Exibe o telefone armazenado
+        phoneInfo.textContent = `Telefone: ${telefone}`;
+
+        // Exibe o botão de alterar telefone
+        phoneInfo.classList.remove("hidden");
+        backButton.classList.remove("hidden");
+    } else {
+        phoneInfo.textContent = "Telefone não encontrado.";
+        phoneInfo.classList.remove("hidden");
     }
 }
 
-// Muda o foco para o próximo campo após digitar e permite colagem de 6 dígitos
-document.querySelectorAll(".code-input").forEach((input, index, inputs) => {
-    input.addEventListener("input", (e) => {
-        const value = e.target.value;
-        if (value.length === 1 && index < inputs.length - 1) {
-            inputs[index + 1].focus();
-        } else if (value.length === 1 && index === inputs.length - 1) {
-            verificarCodigo(); // Verifica automaticamente ao digitar o último dígito
-        }
-    });
-
-    // Permite colar o código inteiro no primeiro campo
-    input.addEventListener("paste", (e) => {
-        const pasteData = e.clipboardData.getData('text').trim();
-        const pasteArray = pasteData.split('');
-
-        // Verifica se o código colado tem 6 dígitos
-        if (pasteArray.length === 6) {
-            inputs.forEach((field, i) => {
-                field.value = pasteArray[i] || ''; // Preenche cada campo
-            });
-            verificarCodigo(); // Verifica o código após colar todos os dígitos
-        }
-
-        e.preventDefault(); // Impede o comportamento padrão de colagem
-    });
-});
-
-// Função para mostrar o número de telefone na tela
-function mostrarTelefone() {
-    const numero = sessionStorage.getItem("telefone");
-    const phoneInfo = document.getElementById("phoneInfo");
-    phoneInfo.textContent = `Código enviado para o número: ${numero}`;
+// Função para inicializar o formulário
+function initializeForm() {
+    initializeTelephoneInput();
+    startTimer(); // Inicia o temporizador
 }
 
-// Exibe o número na tela
-mostrarTelefone();
+// Função para iniciar o temporizador de 3 minutos
+function startTimer() {
+    let timerDisplay = document.getElementById("timer");
+    let time = 180; // 3 minutos em segundos
 
-// Função para mostrar sucesso no botão
-function showSuccess() {
-    const spinner = document.getElementById("spinner");
-    const btnText = document.getElementById("btnText");
-    const checkmark = document.getElementById("checkmark");
-
-    spinner.classList.add("hidden");
-    btnText.classList.add("hidden");
-    checkmark.classList.remove("hidden");
-    checkmark.classList.add("show");
-}
-
-// Função para o temporizador de 3 minutos
-function startTimer(duration, display) {
-    let timer = duration, minutes, seconds;
-    const intervalId = setInterval(function () {
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
-
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-
-        display.textContent = `Tempo restante: ${minutes}:${seconds}`;
-
-        if (--timer < 0) {
-            clearInterval(intervalId);
-            bloquearCampos();
+    const countdown = setInterval(() => {
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        timerDisplay.textContent = `Tempo restante: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        if (time <= 0) {
+            clearInterval(countdown);
+            disableInputs(); // Desativa os inputs quando o tempo acabar
         }
+        time--;
     }, 1000);
 }
 
-// Função para bloquear os campos após expirar o tempo
-function bloquearCampos() {
-    document.querySelectorAll(".code-input").forEach(input => {
+// Função para desativar os inputs quando o tempo acabar
+function disableInputs() {
+    const inputs = document.querySelectorAll(".code-input");
+    inputs.forEach(input => {
         input.disabled = true;
     });
-    alert("O código expirou. Por favor, solicite um novo código.");
+    showNotification("Tempo esgotado! Por favor, tente novamente.");
 }
 
-// Iniciar o temporizador de 3 minutos
-window.onload = function () {
-    const duration = 60 * 3; // 3 minutos em segundos
-    const display = document.getElementById("timer");
-    startTimer(duration, display);
-};
-
-// Voltar para a página de formulário de telefone
-document.getElementById("backButton").addEventListener("click", () => {
-    window.location.href = "index_form.html"; // Redireciona para a página de telefone
+// Evento que executa a inicialização quando a página é carregada
+window.addEventListener("DOMContentLoaded", (event) => {
+    initializeForm();
 });
 
-// Lógica para o botão de verificar código
-document.getElementById("codeForm").addEventListener("submit", function(event) {
-    event.preventDefault(); // Impede o envio padrão do formulário
+// Função para processar o envio do formulário de verificação de código
+document.getElementById("codeForm").addEventListener("submit", function (event) {
+    event.preventDefault(); // Previne o comportamento padrão de envio do formulário
 
-    // Exibir animação de espera no botão com a bolinha de carregamento
+    // Coleta os códigos inseridos
+    const code1 = document.getElementById("code1").value.trim();
+    const code2 = document.getElementById("code2").value.trim();
+    const code3 = document.getElementById("code3").value.trim();
+    const code4 = document.getElementById("code4").value.trim();
+    const code5 = document.getElementById("code5").value.trim();
+    const code6 = document.getElementById("code6").value.trim();
+
+    const fullCode = `${code1}${code2}${code3}${code4}${code5}${code6}`;
+
+    // Validações básicas
+    if (fullCode.length < 6) {
+        showNotification("Por favor, insira todos os dígitos do código.");
+        return;
+    }
+
+    // Aqui você pode adicionar a lógica para verificar o código,
+    // por exemplo, fazer uma requisição ao backend para validar.
+
+    // Exibir animação de carregamento no botão
     const spinner = document.getElementById("spinner");
     const btnText = document.getElementById("btnText");
+    const checkmark = document.getElementById("checkmark");
+    const submitButton = document.getElementById("submitButton");
 
     spinner.classList.remove("hidden");
     spinner.classList.add("show");
     btnText.classList.add("hidden");
 
+    // Simula o envio dos dados e redireciona
     setTimeout(() => {
-        verificarCodigo();
+        // Simula a validação do código
+        const isValid = true; // Alterar conforme a lógica de validação real
 
-        // Ocultar spinner caso o código esteja incorreto
-        if (document.querySelector(".checkmark.hidden")) {
+        if (isValid) {
+            // Simula o envio e exibe o checkmark
+            spinner.classList.add("hidden");
+            checkmark.classList.remove("hidden");
+            checkmark.classList.add("show");
+
+            // Redireciona para a próxima página após um breve intervalo
+            setTimeout(() => {
+                window.location.href = "index_candidates.html"; // Alterar para a página de candidatos
+            }, 1000); // Aguarda 1 segundo para mostrar o checkmark
+        } else {
             spinner.classList.add("hidden");
             btnText.classList.remove("hidden");
+            showNotification("Código inválido. Por favor, tente novamente.");
         }
-    }, 1000);
+    }, 2000); // Aguarda 2 segundos para simular o envio
+});
+
+// Função para permitir que o usuário altere o telefone
+document.getElementById("backButton").addEventListener("click", function () {
+    // Limpa o telefone armazenado e redireciona para a página anterior
+    sessionStorage.removeItem("telefone");
+    window.location.href = "index_form.html"; // Alterar para a página de formulário real
+});
+
+// Evento para avançar automaticamente para o próximo input
+document.querySelectorAll('.code-input').forEach((input, index, inputs) => {
+    input.addEventListener('input', () => {
+        if (input.value.length >= 1) {
+            const nextInput = inputs[index + 1];
+            if (nextInput) {
+                nextInput.focus();
+            }
+        }
+    });
 });

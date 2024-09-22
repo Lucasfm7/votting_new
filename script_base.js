@@ -86,9 +86,8 @@ document.getElementById("cpfForm").addEventListener("submit", async function(eve
     spinner.classList.add("show");
     btnText.classList.add("hidden");
 
-    // Simulação de uma requisição de verificação de CPF
+    // Realizar a requisição real
     setTimeout(async () => {
-        // Simulação de uma resposta de sucesso
         const pessoa = await fetchPersonByCpf(cpfCnpj);
 
         if (pessoa) {

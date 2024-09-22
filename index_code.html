@@ -5,73 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verificação de Código</title>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .code-inputs {
-            display: flex;
-            justify-content: center;
-            gap: 10px; /* Espaçamento entre os inputs */
-        }
-
-        .code-input {
-            width: 40px;
-            height: 40px;
-            font-size: 18px;
-            text-align: center;
-            border: 1px solid #DDD;
-            border-radius: 4px;
-        }
-
-        #timer {
-            text-align: center;
-            font-size: 16px;
-            color: red;
-            margin-bottom: 10px;
-        }
-
-        .login-container {
-            text-align: center;
-            width: 100%;
-            max-width: 450px;
-            padding: 80px;
-            background-color: #FFFFFF;
-            border-radius: 8px;
-            box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
+    <!-- Link para o CSS da biblioteca intl-tel-input, se necessário -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+    <!-- Link para o seu arquivo CSS -->
+    <link rel="stylesheet" href="style_code.css">
 </head>
 <body>
-    <div class="login-container">
-        <h2>Digite o código de verificação</h2>
-        <div id="timer">Tempo restante: 03:00</div>
-        <div class="phone-info" id="phoneInfo"></div>
-        <!-- Botão para alterar o telefone -->
-        <button class="btn-secondary" id="backButton">Alterar Telefone</button>
-        <form id="codeForm">
-            <div class="code-inputs">
-                <input type="text" maxlength="1" class="code-input" id="code1" autofocus>
-                <input type="text" maxlength="1" class="code-input" id="code2">
-                <input type="text" maxlength="1" class="code-input" id="code3">
-                <input type="text" maxlength="1" class="code-input" id="code4">
-                <input type="text" maxlength="1" class="code-input" id="code5">
-                <input type="text" maxlength="1" class="code-input" id="code6">
-            </div>
-            <button type="submit" class="btn-primary" id="submitButton">
-                <span id="btnText">Verificar Código</span>
-                <div id="spinner" class="spinner hidden"></div>
-                <div id="checkmark" class="checkmark hidden">
-                    <svg viewBox="0 0 52 52">
-                        <path d="M14 27 l10 10 l14 -14" fill="none" stroke="#FFFFFF" stroke-width="4"/>
-                    </svg>
+    <!-- Banner de notificação -->
+    <div id="notificationBanner" class="notification hidden"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="login-container">
+            <!-- Logo principal -->
+            <img src="assets/logo.png" alt="Logo Principal" class="logo-main">
+
+            <!-- Temporizador de 3 minutos -->
+            <div id="timer">Tempo restante: 03:00</div>
+
+            <!-- Informação do telefone -->
+            <div class="phone-info" id="phoneInfo"></div>
+
+            <!-- Botão para alterar o telefone -->
+            <button class="btn-secondary hidden" id="backButton">Alterar Telefone</button>
+
+            <!-- Formulário de verificação de código -->
+            <form id="codeForm">
+                <div class="code-inputs">
+                    <input type="text" maxlength="1" class="code-input" id="code1" autofocus>
+                    <input type="text" maxlength="1" class="code-input" id="code2">
+                    <input type="text" maxlength="1" class="code-input" id="code3">
+                    <input type="text" maxlength="1" class="code-input" id="code4">
+                    <input type="text" maxlength="1" class="code-input" id="code5">
+                    <input type="text" maxlength="1" class="code-input" id="code6">
                 </div>
-            </button>
-        </form>
+                <button type="submit" class="btn-primary" id="submitButton">
+                    <span id="btnText">Verificar Código</span>
+                    <div id="spinner" class="spinner hidden"></div>
+                    <div id="checkmark" class="checkmark hidden">
+                        <svg viewBox="0 0 52 52">
+                            <path d="M14 27 l10 10 l14 -14" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+                        </svg>
+                    </div>
+                </button>
+            </form>
+
+            <!-- Link "Entre em contato" dentro do container -->
+            <p class="contact-link">
+                <a href="mailto:contato@empresa.com">Entre em contato caso tenha dúvidas.</a>
+            </p>
+        </div>
+
+        <!-- Nova Logo abaixo do container -->
+        <div class="new-logo">
+            <img src="assets/realizacao_aciac.jpeg" alt="Realização ACIC">
+        </div>
     </div>
 
+    <!-- Rodapé atualizado -->
+    <div class="footer">
+        <p>
+            Desenvolvido por <a href="pagina_lucas_malta.html" class="footer-link">Lucas Malta</a> em parceria com 
+            <a href="pagina_atenas.html" class="footer-link">Atenas</a>
+        </p>
+        <!-- Logo da Atenas no rodapé para telas pequenas -->
+        <div class="logo-atenas-footer">
+            <a href="pagina_atenas.html">
+                <img src="assets/atenas_logo.png" alt="Logo Atenas">
+            </a>
+        </div>
+    </div>
+
+    <!-- Logo da Atenas no canto inferior direito -->
+    <div class="logo-atenas-corner">
+        <a href="pagina_atenas.html">
+            <img src="assets/atenas_logo.png" alt="Logo Atenas" id="atenasLogo">
+        </a>
+    </div>
+
+    <!-- Scripts da biblioteca intl-tel-input, se necessário -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"></script>
+
+    <!-- Link para o seu arquivo JavaScript -->
     <script src="script_code.js"></script>
 </body>
 </html>

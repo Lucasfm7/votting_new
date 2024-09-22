@@ -5,46 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ACIC - Melhores do Ano 2024</title>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style_base.css">
 </head>
 <body>
     <!-- Banner de notificação -->
     <div id="notificationBanner" class="notification hidden"></div>
 
-    <div class="login-container">
-        <!-- Logo principal -->
-        <img src="assets/logo.png" alt="Logo Principal" class="logo-main">
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="login-container">
+            <!-- Logo principal -->
+            <img src="assets/logo.png" alt="Logo Principal" class="logo-main">
 
-        <!-- Formulário de login -->
-        <div class="login-box">
-            <form id="cpfForm">
-                <!-- Label para CPF/CNPJ -->
-                <label for="cpfCnpj" class="label-text">CPF ou CNPJ</label>
-                <!-- Campo de entrada para CPF/CNPJ -->
-                <input type="text" id="cpfCnpj" class="input-field" placeholder="Digite seu CPF ou CNPJ" maxlength="18">
+            <!-- Formulário de login -->
+            <div class="login-box">
+                <form id="cpfForm">
+                    <!-- Label para CPF/CNPJ -->
+                    <label for="cpfCnpj" class="label-text">CPF ou CNPJ</label>
+                    <!-- Campo de entrada para CPF/CNPJ -->
+                    <input type="text" id="cpfCnpj" class="input-field" placeholder="Digite seu CPF ou CNPJ" maxlength="18">
 
-                <!-- Botão de avançar -->
-                <button type="submit" class="btn-primary" id="btnAvancar">
-                    <span id="btnText">Continuar</span>
-                    <div id="spinner" class="spinner hidden"></div>
-                    <div id="checkmark" class="checkmark hidden">
-                        <svg viewBox="0 0 52 52">
-                            <path d="M14 27 l10 10 l14 -14" fill="none" stroke="#FFFFFF" stroke-width="4"/>
-                        </svg>
-                    </div>
-                </button>
+                    <!-- Botão de avançar -->
+                    <button type="submit" class="btn-primary" id="btnAvancar">
+                        <span id="btnText">Continuar</span>
+                        <div id="spinner" class="spinner hidden"></div>
+                        <div id="checkmark" class="checkmark hidden">
+                            <svg viewBox="0 0 52 52">
+                                <path d="M14 27 l10 10 l14 -14" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+                            </svg>
+                        </div>
+                    </button>
 
-                <!-- Link de contato -->
-                <p class="contact-link">
-                    <a href="mailto:contato@empresa.com">Entre em contato caso tenha dúvidas.</a> 
-                </p>
-            </form>
+                    <!-- Link de contato -->
+                    <p class="contact-link">
+                        <a href="mailto:contato@empresa.com">Entre em contato caso tenha dúvidas.</a> 
+                    </p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Nova Logo abaixo do container -->
+        <div class="new-logo">
+            <img src="assets/realizacao_aciac.jpeg" alt="Realização ACIC">
         </div>
     </div>
 
-    <!-- Rodapé fora do container -->
+    <!-- Rodapé atualizado -->
     <div class="footer">
-        <p>Desenvolvido por Lucas Malta</p>
+        <p>
+            Desenvolvido por <a href="pagina_lucas_malta.html" class="footer-link">Lucas Malta</a> em parceria com 
+            <a href="pagina_atenas.html" class="footer-link">Atenas</a>
+        </p>
+        <!-- Logo da Atenas no rodapé para telas pequenas -->
+        <div class="logo-atenas-footer">
+            <a href="pagina_atenas.html">
+                <img src="assets/atenas_logo.png" alt="Logo Atenas">
+            </a>
+        </div>
+    </div>
+
+    <!-- Logo da Atenas no canto inferior direito -->
+    <div class="logo-atenas-corner">
+        <a href="pagina_atenas.html">
+            <img src="assets/atenas_logo.png" alt="Logo Atenas" id="atenasLogo">
+        </a>
     </div>
 
     <!-- Script externo -->

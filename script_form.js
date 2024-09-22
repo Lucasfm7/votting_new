@@ -1,33 +1,36 @@
-// Function to show notifications with fade-in and fade-out
+// Função para exibir a notificação com esmaecimento
 function showNotification(message) {
     const notificationBanner = document.getElementById("notificationBanner");
     notificationBanner.textContent = message;
     notificationBanner.classList.remove("hidden");
     notificationBanner.classList.add("show");
 
-    // Hide the banner after 3 seconds with fade-out
+    // Esconder o banner após 3 segundos com fade-out
     setTimeout(() => {
         notificationBanner.classList.remove("show");
         notificationBanner.classList.add("hide");
         setTimeout(() => {
             notificationBanner.classList.add("hidden");
             notificationBanner.classList.remove("hide");
-        }, 500); // Time for fade-out
+        }, 500); // Tempo para o fade-out
     }, 3000);
 }
 
-// Initialize the phone input field with intl-tel-input
-var input = document.querySelector("#telefone");
-var iti = window.intlTelInput(input, {
-    initialCountry: "br",        // Set initial country to Brazil
-    separateDialCode: false,     // Do not display separate dial code
-    autoPlaceholder: "aggressive", // Show suggested placeholder as typing
-    formatOnDisplay: true,       // Automatically format as typing
-    nationalMode: true,          // Show numbers in national format
-    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
-});
+// Função para inicializar o input de telefone com intl-tel-input
+function initializeTelephoneInput() {
+    const input = document.querySelector("#telefone");
+    window.intlTelInput(input, {
+        initialCountry: "br",          // Define o país inicial para Brasil
+        separateDialCode: false,       // Não exibe o código do país separadamente
+        autoPlaceholder: false,        // Desabilita o placeholder automático
+        formatOnDisplay: false,        // Desabilita formatação automática no display
+        nationalMode: true,            // Mantém o número no formato nacional
+        allowDropdown: false,          // Desabilita a mudança de país pelo usuário (opcional)
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js" // Script de utilidades
+    });
+}
 
-// Function to format the phone number as the user types
+// Função para formatar o número de telefone conforme o usuário digita
 function formatPhoneNumber(value) {
     value = value.replace(/\D/g, '');
 
@@ -35,61 +38,39 @@ function formatPhoneNumber(value) {
         value = value.slice(0, 11);
     }
 
-    var formattedNumber;
+    let formattedNumber;
 
     if (value.length <= 10) {
-        // Format as (XX) XXXX-XXXX
-        formattedNumber = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+        // Formata como (XX) 9 8765-4321
+        formattedNumber = value.replace(/(\d{2})(\d)(\d{4})(\d{0,4})/, '($1) $2 $3-$4');
     } else {
-        // Format as (XX) XXXXX-XXXX
-        formattedNumber = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+        // Formata como (XX) 9 8765-4321
+        formattedNumber = value.replace(/(\d{2})(\d)(\d{4})(\d{0,4})/, '($1) $2 $3-$4');
     }
 
     return formattedNumber;
 }
 
-// Apply formatting as the user types
-input.addEventListener('input', function (e) {
-    // Store the cursor position and input value before formatting
-    var cursorPosition = input.selectionStart;
-    var unformattedValue = input.value;
-
-    // Get only the digits from the input value
-    var numbers = unformattedValue.replace(/\D/g, '');
-
-    // Format the number
-    var formattedNumber = formatPhoneNumber(numbers);
-
-    // Set the new value
-    input.value = formattedNumber;
-
-    // Calculate the new cursor position
-    var newCursorPosition = getNewCursorPosition(cursorPosition, unformattedValue, formattedNumber);
-
-    // Set the cursor position
-    input.setSelectionRange(newCursorPosition, newCursorPosition);
-});
-
-// Function to calculate the new cursor position after formatting
+// Função para calcular a nova posição do cursor após a formatação
 function getNewCursorPosition(oldPosition, oldValue, newValue) {
-    // Count the number of digits before the old cursor position
-    var digitsBeforeCursor = oldValue.slice(0, oldPosition).replace(/\D/g, '').length;
+    // Conta o número de dígitos antes da posição antiga
+    const digitsBeforeCursor = oldValue.slice(0, oldPosition).replace(/\D/g, '').length;
 
-    // Find the position in the new value that corresponds to the same number of digits
-    var newCursorPosition = 0;
-    var digitsCount = 0;
+    // Encontra a posição na nova string que corresponde ao mesmo número de dígitos
+    let newCursorPosition = 0;
+    let digitsCount = 0;
 
-    for (var i = 0; i < newValue.length; i++) {
+    for (let i = 0; i < newValue.length; i++) {
         if (/\d/.test(newValue.charAt(i))) {
             digitsCount++;
         }
         if (digitsCount === digitsBeforeCursor) {
-            newCursorPosition = i + 1; // +1 because positions are 0-based
+            newCursorPosition = i + 1; // +1 porque as posições são baseadas em 0
             break;
         }
     }
 
-    // If we didn't reach the desired number of digits, set cursor at the end
+    // Se não alcançou o número desejado de dígitos, define o cursor no final
     if (digitsCount < digitsBeforeCursor) {
         newCursorPosition = newValue.length;
     }
@@ -97,24 +78,79 @@ function getNewCursorPosition(oldPosition, oldValue, newValue) {
     return newCursorPosition;
 }
 
-// Display valid phone message when the user starts typing
-input.addEventListener("input", function () {
+// Evento para aplicar a formatação conforme o usuário digita
+document.getElementById("telefone").addEventListener('input', function (e) {
+    const input = e.target;
+    const cursorPosition = input.selectionStart;
+    const unformattedValue = input.value;
+
+    // Obtém apenas os dígitos do valor do input
+    const numbers = unformattedValue.replace(/\D/g, '');
+
+    // Formata o número
+    const formattedNumber = formatPhoneNumber(numbers);
+
+    // Define o novo valor
+    input.value = formattedNumber;
+
+    // Calcula a nova posição do cursor
+    const newCursorPosition = getNewCursorPosition(cursorPosition, unformattedValue, formattedNumber);
+
+    // Define a posição do cursor
+    input.setSelectionRange(newCursorPosition, newCursorPosition);
+});
+
+// Exibir a mensagem de telefone válido quando o usuário começa a digitar
+document.getElementById("telefone").addEventListener("input", function () {
     const telefoneInfo = document.getElementById("telefoneInfo");
     if (!telefoneInfo.innerHTML) {
-        // Display the message only once
+        // Exibe a mensagem apenas uma vez
         telefoneInfo.innerHTML = "Por favor, insira um telefone que possa receber SMS.";
     }
 });
 
-// Form processing logic
+// Função para exibir a saudação personalizada
+function displayGreeting() {
+    const saudacao = sessionStorage.getItem("saudacao") || "";
+    const nomePessoa = sessionStorage.getItem("nomePessoa") || "";
+    const empresaPessoa = sessionStorage.getItem("empresaPessoa") || "";
+
+    let mensagem = saudacao;
+
+    if (empresaPessoa) {
+        mensagem += `, ${empresaPessoa}`;
+    } else if (nomePessoa) {
+        mensagem += `, ${nomePessoa}`;
+    }
+
+    const nomeDiv = document.getElementById("nomePessoa");
+    if (nomeDiv) {
+        nomeDiv.textContent = mensagem;
+    }
+}
+
+// Função para inicializar o formulário
+function initializeForm() {
+    displayGreeting();
+    initializeTelephoneInput();
+}
+
+// Evento que executa a inicialização quando a página é carregada
+window.addEventListener("DOMContentLoaded", (event) => {
+    initializeForm();
+});
+
+// Função para processar o envio do formulário
 document.getElementById("nameForm").addEventListener("submit", function (event) {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault(); // Previne o comportamento padrão de envio do formulário
 
     const nome = document.getElementById("nome").value.trim();
     const sobrenome = document.getElementById("sobrenome").value.trim();
-    const telefone = iti.getNumber(intlTelInputUtils.numberFormat.E164); // Get the number in E.164 format
+    const telefoneInput = document.querySelector("#telefone");
+    const iti = window.intlTelInputGlobals.getInstance(telefoneInput);
+    const telefone = iti.getNumber(intlTelInputUtils.numberFormat.E164); // Obtém o número no formato E.164
 
-    // Basic validations
+    // Validações básicas
     if (nome === "" || sobrenome === "") {
         showNotification("Por favor, preencha todos os campos.");
         return;
@@ -125,7 +161,7 @@ document.getElementById("nameForm").addEventListener("submit", function (event) 
         return;
     }
 
-    // Show loading animation on the button
+    // Exibir animação de carregamento no botão
     const spinner = document.getElementById("spinner");
     const btnText = document.getElementById("btnText");
     const checkmark = document.getElementById("checkmark");
@@ -134,21 +170,19 @@ document.getElementById("nameForm").addEventListener("submit", function (event) 
     spinner.classList.add("show");
     btnText.classList.add("hidden");
 
-    // Simulate data submission and redirect to code page
+    // Simula o envio dos dados e redireciona
     setTimeout(() => {
-        // Simulate data submission and display checkmark
+        // Simula o envio e exibe o checkmark
         spinner.classList.add("hidden");
         checkmark.classList.remove("hidden");
         checkmark.classList.add("show");
 
-        // Store the phone number in sessionStorage
+        // Armazena o número de telefone no sessionStorage (se necessário)
         sessionStorage.setItem("telefone", telefone);
 
-        // Hide the loading animation and redirect
+        // Redireciona para a página de verificação de código após um breve intervalo
         setTimeout(() => {
-            // Redirect to the code verification page
             window.location.href = "index_code.html";
-        }, 1000); // Wait 1 second to show the checkmark
-
-    }, 2000);
+        }, 1000); // Aguarda 1 segundo para mostrar o checkmark
+    }, 2000); // Aguarda 2 segundos para simular o envio
 });

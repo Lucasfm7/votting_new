@@ -7,96 +7,91 @@
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
     <!-- Link para o CSS da biblioteca intl-tel-input -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
-    <!-- Seu arquivo CSS -->
-    <link rel="stylesheet" href="style.css">
+    <!-- Seu arquivo CSS (deve vir depois do CSS da biblioteca) -->
+    <link rel="stylesheet" href="style_form.css">
 </head>
 <body>
     <!-- Banner de notificação -->
     <div id="notificationBanner" class="notification hidden"></div>
 
-    <div class="login-container" style="min-height: 550px;">
-        <!-- Adicionando a imagem ao topo -->
-        <img src="assets/logo.png" alt="Logo Principal" class="logo-main" style="width: 120px; margin-bottom: 20px;">
-        
-        <!-- Exibe a saudação -->
-        <div id="nomePessoa" class="nome" style="margin-bottom: 20px;"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="login-container">
+            <!-- Adicionando a imagem ao topo -->
+            <img src="assets/logo.png" alt="Logo Principal" class="logo-main">
 
-        <!-- Formulário de Nome, Sobrenome e Telefone -->
-        <div class="login-box">
-            <form id="nameForm">
-                <label for="nome" class="label-text">Nome</label>
-                <input type="text" id="nome" class="input-field" placeholder="Digite seu Nome">
+            <!-- Exibe a saudação -->
+            <div id="nomePessoa" class="nome"></div>
 
-                <label for="sobrenome" class="label-text">Sobrenome</label>
-                <input type="text" id="sobrenome" class="input-field" placeholder="Digite seu Sobrenome">
+            <!-- Formulário de Nome, Sobrenome e Telefone -->
+            <div class="login-box">
+                <form id="nameForm">
+                    <label for="nome" class="label-text">Nome</label>
+                    <input type="text" id="nome" class="input-field" placeholder="Digite seu Nome">
 
-                <!-- Novo campo de Telefone -->
-                <label for="telefone" class="label-text">Telefone</label>
-                <input type="tel" id="telefone" class="input-field" placeholder="Digite seu Telefone">
+                    <label for="sobrenome" class="label-text">Sobrenome</label>
+                    <input type="text" id="sobrenome" class="input-field" placeholder="Digite seu Sobrenome">
 
-                <!-- Mensagem de informação sobre o telefone -->
-                <div id="telefoneInfo" class="telefone-info">
-                    Por favor, insira um telefone que possa receber SMS.
-                </div>
+                    <!-- Campo de Telefone -->
+                    <label for="telefone" class="label-text">Telefone</label>
+                    <input type="tel" id="telefone" class="input-field" placeholder="(31) 9 9876-5432">
 
-                <!-- Botão de enviar com espaçamento -->
-                <button type="submit" class="btn-primary" id="btnEnviar" style="margin-top: 20px;">
-                    <span id="btnText">Enviar SMS</span>
-                    <div id="spinner" class="spinner hidden"></div>
-                    <div id="checkmark" class="checkmark hidden">
-                        <svg viewBox="0 0 52 52">
-                            <path d="M14 27 l10 10 l14 -14" fill="none" stroke="#FFFFFF" stroke-width="4"/>
-                        </svg>
+                    <!-- Mensagem de informação sobre o telefone -->
+                    <div id="telefoneInfo" class="telefone-info">
+                        Por favor, insira um telefone que possa receber SMS.
                     </div>
-                </button>
 
-                <!-- Link de contato com estilo e hover dourado -->
-                <p class="contact-link">
-                    <a href="mailto:contato@empresa.com">Entre em contato caso tenha dúvidas.</a>
-                </p>                
-            </form>
+                    <!-- Botão de enviar com espaçamento -->
+                    <button type="submit" class="btn-primary" id="btnEnviar">
+                        <span id="btnText">Enviar SMS</span>
+                        <div id="spinner" class="spinner hidden"></div>
+                        <div id="checkmark" class="checkmark hidden">
+                            <svg viewBox="0 0 52 52">
+                                <path d="M14 27 l10 10 l14 -14" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+                            </svg>
+                        </div>
+                    </button>
+
+                    <!-- Link de contato com estilo e hover dourado -->
+                    <p class="contact-link">
+                        <a href="mailto:contato@empresa.com">Entre em contato caso tenha dúvidas.</a>
+                    </p>                
+                </form>
+            </div>
+        </div>
+
+        <!-- Nova Logo abaixo do container -->
+        <div class="new-logo">
+            <img src="assets/realizacao_aciac.jpeg" alt="Realização ACIC">
         </div>
     </div>
 
-    <!-- Script para validar o acesso e inicializar o campo de telefone -->
-    <script>
-        // Verifica se o CPF foi validado antes de permitir o acesso e se a validação tem menos de 10 minutos
-        const cpfValidado = sessionStorage.getItem("cpfValidado");
-        const validacaoTime = sessionStorage.getItem("validacaoTime");
-        const agora = new Date().getTime();
+    <!-- Rodapé atualizado -->
+    <div class="footer">
+        <p>
+            Desenvolvido por <a href="pagina_lucas_malta.html" class="footer-link">Lucas Malta</a> em parceria com 
+            <a href="pagina_atenas.html" class="footer-link">Atenas</a>
+        </p>
+        <!-- Logo da Atenas no rodapé para telas pequenas -->
+        <div class="logo-atenas-footer">
+            <a href="pagina_atenas.html">
+                <img src="assets/atenas_logo.png" alt="Logo Atenas">
+            </a>
+        </div>
+    </div>
 
-        if (!cpfValidado || !validacaoTime || (agora - validacaoTime) > 10 * 60 * 1000) { // 10 minutos em milissegundos
-            alert("Validação expirada. Por favor, valide seu CPF novamente.");
-            sessionStorage.clear(); // Limpa o sessionStorage se expirar
-            window.location.href = "index_base.html";
-        }
-
-        // Exibe a saudação e o nome da empresa ou pessoa
-        const nomePessoa = sessionStorage.getItem("nomePessoa") || '';
-        const empresaPessoa = sessionStorage.getItem("empresaPessoa") || '';
-        const saudacao = sessionStorage.getItem("saudacao") || '';
-
-        // Exibe a saudação com nome ou empresa, sem repetição
-        let saudacaoTexto = saudacao;
-        if (empresaPessoa) {
-            saudacaoTexto += `, ${empresaPessoa}!`;
-        } else if (nomePessoa) {
-            saudacaoTexto += `, ${nomePessoa}!`;
-        } else {
-            saudacaoTexto += "!";
-        }
-
-        document.getElementById("nomePessoa").textContent = saudacaoTexto;
-    </script>
-
-    <!-- Include the CSS of the intl-tel-input library -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+    <!-- Logo da Atenas no canto inferior direito -->
+    <div class="logo-atenas-corner">
+        <a href="pagina_atenas.html">
+            <img src="assets/atenas_logo.png" alt="Logo Atenas" id="atenasLogo">
+        </a>
+    </div>
 
     <!-- Include the JavaScript of the intl-tel-input library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"></script>
 
-    <!-- Your custom script -->
+    <!-- Seu script customizado -->
     <script src="script_form.js"></script>
 </body>
 </html>

@@ -1,0 +1,459 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos do corpo */
+body {
+    font-family: 'Comfortaa', sans-serif;
+    background-color: #f6f6f6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Container de login */
+.login-container {
+    text-align: center;
+    width: 90%;
+    max-width: 450px;
+    padding: 40px 20px;
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Logo principal */
+.logo-main {
+    width: 150px;
+    margin-bottom: 20px;
+}
+
+/* Label de texto */
+.label-text {
+    display: block;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 8px;
+    text-align: left;
+    width: 100%;
+}
+
+/* Campo de entrada */
+.input-field {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #DDD;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+/* Botões */
+.btn-primary, .btn-secondary {
+    width: 100%;
+    padding: 10px;
+    color: #FFF;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.btn-primary {
+    background-color: #FF0000;
+    margin-top: 20px;
+}
+
+.btn-primary:hover {
+    background-color: #DAA520;
+    transform: scale(1.05);
+}
+
+.btn-secondary {
+    background-color: #007BFF;
+    margin-bottom: 20px;
+}
+
+.btn-secondary:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Spinner */
+.spinner {
+    border: 3px solid #FFF;
+    border-top: 3px solid #CC0000;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    position: absolute;
+    right: 20px;
+}
+
+.spinner.show {
+    opacity: 1;
+}
+
+/* Classes auxiliares */
+.hidden {
+    display: none;
+}
+
+/* Link de contato */
+.contact-link {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.contact-link a {
+    color: #DAA520;
+    text-decoration: none;
+    transition: transform 0.3s ease, font-weight 0.3s ease, color 0.3s ease;
+    font-weight: normal;
+}
+
+.contact-link a:hover {
+    transform: scale(1.05);
+    font-weight: bold;
+    color: #FFD700;
+}
+
+/* Rodapé */
+.footer {
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    width: 100%;
+    padding: 10px 0;
+    background-color: #FFFFFF;
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Rodapé Links */
+.footer-link {
+    color: #DAA520;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: #FFD700;
+}
+
+/* Banner de notificação */
+.notification {
+    background-color: #f44336;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+}
+
+.notification.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.notification.hide {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Fade-in e fade-out para o texto do botão */
+#btnText {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#btnText.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#btnText.fade-in {
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+/* Código de verificação */
+.code-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.code-input {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    text-align: center;
+    border: 1px solid #DDD;
+    border-radius: 4px;
+}
+
+/* Checkmark */
+.checkmark {
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    vertical-align: middle;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.checkmark.show {
+    opacity: 1;
+}
+
+.checkmark svg {
+    width: 100%;
+    height: 100%;
+}
+
+.checkmark path {
+    stroke: #28a745;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: dash 0.5s forwards;
+}
+
+/* Animações */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Caixa de diálogo modal de confirmação */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: #FFF;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+.modal-content .btn-primary,
+.modal-content .btn-secondary {
+    width: 45%;
+    padding: 10px;
+    font-size: 16px;
+}
+
+/* Animação de sucesso em tela cheia */
+.success-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+    animation: fadeIn 1s forwards;
+}
+
+.success-animation.hidden {
+    display: none;
+}
+
+.success-animation img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    animation: scaleUp 1s forwards;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.success-message {
+    margin-top: 20px;
+    color: #FFF;
+    animation: fadeInUp 1s forwards;
+    text-align: center;
+}
+
+.success-message h2 {
+    font-size: 36px;
+    color: #DAA520;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Botão discreto de voltar */
+.btn-back {
+    margin-top: 20px;
+    padding: 8px 16px;
+    background-color: transparent;
+    color: #DAA520;
+    border: 2px solid #DAA520;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.btn-back:hover {
+    background-color: #DAA520;
+    color: #FFF;
+}
+
+/* Animações adicionais */
+@keyframes scaleUp {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Logo da Atenas no canto inferior direito */
+.logo-atenas-corner {
+    position: fixed;
+    bottom: -10px;
+    right: -10px;
+    width: 100px;
+    height: 100px;
+    z-index: 1000;
+}
+
+.logo-atenas-corner img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Logo da Atenas no Rodapé para Telas Pequenas */
+.logo-atenas-footer {
+    display: none;
+    width: 70px;
+    height: 70px;
+    margin-top: 10px;
+}
+
+.logo-atenas-footer img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Nova Logo abaixo do container */
+.new-logo {
+    width: 200px;
+    height: 200px;
+}
+
+.new-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+@media (max-width: 768px) {
+    /* Esconder a logo fixa no canto inferior direito */
+    .logo-atenas-corner {
+        display: none;
+    }
+
+    /* Mostrar a logo no rodapé */
+    .logo-atenas-footer {
+        display: block;
+        width: 70px;
+        height: 70px;
+    }
+
+    /* Ajustar o rodapé para centralizar os itens */
+    .footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Ajustar nova logo para telas pequenas */
+    .new-logo {
+        width: 200px;
+        height: 200px;
+    }
+}
