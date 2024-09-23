@@ -191,7 +191,7 @@ document.getElementById("nameForm").addEventListener("submit", function (event) 
 
             // Redireciona para a página de verificação de código após um breve intervalo
             setTimeout(() => {
-                window.location.href = "verify_code.html"; // Certifique-se de que a página de verificação existe
+                window.location.href = "index_code.html"; // Certifique-se de que a página de verificação existe
             }, 1000); // Aguarda 1 segundo para mostrar o checkmark
         } else {
             // Erro: mostrar a mensagem de erro
