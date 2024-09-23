@@ -515,4 +515,16 @@ body {
     #nome, #sobrenome, #btnEnviar, .telefone-info, .contact-link {
         max-width: 250px; /* Reduzido para telas menores */
     }
+
+    /* Ajustes adicionais para alinhar os títulos à esquerda dentro do campo */
+    .label-text {
+        max-width: 250px; /* Igual ao dos inputs */
+        margin-left: auto; /* Centraliza horizontalmente dentro do container */
+        margin-right: auto;
+    }
+
+    /* Reduzir a largura do input de telefone */
+    #telefone {
+        width: 250px; /* Reduzido de 300px para 250px */
+    }
 }
