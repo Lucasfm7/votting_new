@@ -171,7 +171,7 @@ document.getElementById("nameForm").addEventListener("submit", function (event) 
     btnText.classList.add("hidden");
 
     // Enviar o número de telefone para o backend para gerar e enviar o código de verificação
-    fetch('/api/send_verification_code/', {
+    fetch('https://django-server-production-f3c5.up.railway.app/api/send_verification_code/', { // URL completa do backend
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -191,7 +191,7 @@ document.getElementById("nameForm").addEventListener("submit", function (event) 
 
             // Redireciona para a página de verificação de código após um breve intervalo
             setTimeout(() => {
-                window.location.href = "index_code.html";
+                window.location.href = "verify_code.html"; // Certifique-se de que a página de verificação existe
             }, 1000); // Aguarda 1 segundo para mostrar o checkmark
         } else {
             // Erro: mostrar a mensagem de erro

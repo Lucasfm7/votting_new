@@ -16,6 +16,24 @@ function showNotification(message) {
     }, 3000);
 }
 
+// Função para exibir a notificação de sucesso
+function showSuccess(message) {
+    const notificationBanner = document.getElementById("notificationBanner");
+    notificationBanner.textContent = message;
+    notificationBanner.classList.remove("hidden", "notification");
+    notificationBanner.classList.add("success", "show");
+
+    // Esconder o banner após 3 segundos com fade-out
+    setTimeout(() => {
+        notificationBanner.classList.remove("show", "success");
+        notificationBanner.classList.add("hide");
+        setTimeout(() => {
+            notificationBanner.classList.add("hidden");
+            notificationBanner.classList.remove("hide");
+        }, 500); // Tempo para o fade-out
+    }, 3000);
+}
+
 // Função para inicializar o input de telefone com intl-tel-input (se necessário)
 function initializeTelephoneInput() {
     const telefone = sessionStorage.getItem("telefone");
@@ -93,8 +111,12 @@ document.getElementById("codeForm").addEventListener("submit", function (event) 
         return;
     }
 
-    // Aqui você pode adicionar a lógica para verificar o código,
-    // por exemplo, fazer uma requisição ao backend para validar.
+    const telefone = sessionStorage.getItem("telefone");
+
+    if (!telefone) {
+        showNotification("Número de telefone não encontrado. Por favor, inicie o processo novamente.");
+        return;
+    }
 
     // Exibir animação de carregamento no botão
     const spinner = document.getElementById("spinner");
@@ -106,27 +128,41 @@ document.getElementById("codeForm").addEventListener("submit", function (event) 
     spinner.classList.add("show");
     btnText.classList.add("hidden");
 
-    // Simula o envio dos dados e redireciona
-    setTimeout(() => {
-        // Simula a validação do código
-        const isValid = true; // Alterar conforme a lógica de validação real
-
-        if (isValid) {
-            // Simula o envio e exibe o checkmark
+    // Enviar a verificação para o backend
+    fetch('https://django-server-production-f3c5.up.railway.app/api/verify_code/', { // URL completa do backend
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone_number: telefone, code: fullCode }),
+    })
+    .then(response => response.json().then(data => ({ status: response.status, body: data })))
+    .then(({ status, body }) => {
+        if (status === 200) {
+            // Sucesso: mostrar o checkmark e redirecionar
             spinner.classList.add("hidden");
             checkmark.classList.remove("hidden");
             checkmark.classList.add("show");
 
+            showSuccess("Código verificado com sucesso!");
+
             // Redireciona para a próxima página após um breve intervalo
             setTimeout(() => {
-                window.location.href = "index_candidates.html"; // Alterar para a página de candidatos
+                window.location.href = "index_candidates.html"; // Substitua pelo caminho correto da próxima página
             }, 1000); // Aguarda 1 segundo para mostrar o checkmark
         } else {
+            // Erro: mostrar a mensagem de erro
             spinner.classList.add("hidden");
             btnText.classList.remove("hidden");
-            showNotification("Código inválido. Por favor, tente novamente.");
+            showNotification(body.detail || "Erro ao verificar o código de verificação.");
         }
-    }, 2000); // Aguarda 2 segundos para simular o envio
+    })
+    .catch(error => {
+        console.error('Erro na requisição:', error);
+        spinner.classList.add("hidden");
+        btnText.classList.remove("hidden");
+        showNotification("Erro ao verificar o código de verificação.");
+    });
 });
 
 // Função para permitir que o usuário altere o telefone
