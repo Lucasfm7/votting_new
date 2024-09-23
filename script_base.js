@@ -18,7 +18,7 @@ function showNotification(message) {
 
 // Função para realizar a requisição GET com o CPF
 async function fetchPersonByCpf(cpf) {
-    const baseUrl = "https://django-server-production-f3c5.up.railway.app/pessoas/pesquisar_cpf/";
+    const baseUrl = "https://django-server-production-f3c5.up.railway.app/api/pessoas/pesquisar_cpf/";
     const params = { cpf: cpf.replace(/\D/g, '') }; // Remove a formatação e envia apenas números
 
     try {

@@ -170,19 +170,40 @@ document.getElementById("nameForm").addEventListener("submit", function (event) 
     spinner.classList.add("show");
     btnText.classList.add("hidden");
 
-    // Simula o envio dos dados e redireciona
-    setTimeout(() => {
-        // Simula o envio e exibe o checkmark
+    // Enviar o número de telefone para o backend para gerar e enviar o código de verificação
+    fetch('/api/send_verification_code/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone_number: telefone }),
+    })
+    .then(response => response.json().then(data => ({ status: response.status, body: data })))
+    .then(({ status, body }) => {
+        if (status === 200) {
+            // Sucesso: mostrar o checkmark e redirecionar
+            spinner.classList.add("hidden");
+            checkmark.classList.remove("hidden");
+            checkmark.classList.add("show");
+
+            // Armazena o número de telefone no sessionStorage para uso na verificação
+            sessionStorage.setItem("telefone", telefone);
+
+            // Redireciona para a página de verificação de código após um breve intervalo
+            setTimeout(() => {
+                window.location.href = "index_code.html";
+            }, 1000); // Aguarda 1 segundo para mostrar o checkmark
+        } else {
+            // Erro: mostrar a mensagem de erro
+            spinner.classList.add("hidden");
+            btnText.classList.remove("hidden");
+            showNotification(body.detail || "Erro ao enviar o código de verificação.");
+        }
+    })
+    .catch(error => {
+        console.error('Erro na requisição:', error);
         spinner.classList.add("hidden");
-        checkmark.classList.remove("hidden");
-        checkmark.classList.add("show");
-
-        // Armazena o número de telefone no sessionStorage (se necessário)
-        sessionStorage.setItem("telefone", telefone);
-
-        // Redireciona para a página de verificação de código após um breve intervalo
-        setTimeout(() => {
-            window.location.href = "index_code.html";
-        }, 1000); // Aguarda 1 segundo para mostrar o checkmark
-    }, 2000); // Aguarda 2 segundos para simular o envio
+        btnText.classList.remove("hidden");
+        showNotification("Erro ao enviar o código de verificação.");
+    });
 });
