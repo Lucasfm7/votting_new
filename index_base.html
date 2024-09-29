@@ -38,7 +38,7 @@
 
                     <!-- Link de contato -->
                     <p class="contact-link">
-                        <a href="mailto:contato@empresa.com">Entre em contato caso tenha dúvidas.</a> 
+                        <a href="https://api.whatsapp.com/send?phone=553391118140&text=Fale%20conosco%20Aciac">Entre em contato caso tenha dúvidas.</a> 
                     </p>
                 </form>
             </div>
@@ -52,13 +52,17 @@
 
     <!-- Rodapé atualizado -->
     <div class="footer">
+        <!-- Botão Resultado dentro do rodapé -->
+        <div class="resultado-button-footer">
+            <button class="resultado-button">Resultado</button>
+        </div>
         <p>
-            Desenvolvido por <a href="pagina_lucas_malta.html" class="footer-link">Lucas Malta</a> em parceria com 
-            <a href="pagina_atenas.html" class="footer-link">Atenas</a>
+            Desenvolvido por <a href="https://www.linkedin.com/in/malta-lucas/" class="footer-link">Lucas Malta</a> em parceria com 
+            <a href="https://atenasstrategy.com/" class="footer-link">Atenas</a>
         </p>
         <!-- Logo da Atenas no rodapé para telas pequenas -->
         <div class="logo-atenas-footer">
-            <a href="pagina_atenas.html">
+            <a href="https://atenasstrategy.com/">
                 <img src="assets/atenas_logo.png" alt="Logo Atenas">
             </a>
         </div>
@@ -66,9 +70,28 @@
 
     <!-- Logo da Atenas no canto inferior direito -->
     <div class="logo-atenas-corner">
-        <a href="pagina_atenas.html">
+        <a href="https://atenasstrategy.com/">
             <img src="assets/atenas_logo.png" alt="Logo Atenas" id="atenasLogo">
         </a>
+    </div>
+
+    <!-- Modal de Login para Resultado -->
+    <div id="resultadoModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Login para Ver Resultado</h2>
+            <form id="resultadoLoginForm">
+                <label for="resultadoUsername" class="label-text">Usuário</label>
+                <input type="text" id="resultadoUsername" class="input-field" placeholder="Digite seu usuário" required maxlength="50">
+
+                <label for="resultadoPassword" class="label-text">Senha</label>
+                <input type="password" id="resultadoPassword" class="input-field" placeholder="Digite sua senha" required maxlength="50">
+
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Entrar</button>
+                    <button type="button" class="btn-secondary" id="btnCancelarResultado">Cancelar</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Script externo -->

@@ -66,7 +66,7 @@ body {
 }
 
 /* Botões */
-.btn-primary, .btn-secondary {
+.btn-primary, .btn-secondary, .resultado-button {
     width: 100%;
     padding: 10px;
     color: #FFF;
@@ -81,9 +81,9 @@ body {
     position: relative;
 }
 
+/* Botão Principal */
 .btn-primary {
     background-color: #FF0000;
-    margin-top: 20px;
 }
 
 .btn-primary:hover {
@@ -91,9 +91,9 @@ body {
     transform: scale(1.05);
 }
 
+/* Botão Secundário */
 .btn-secondary {
     background-color: #007BFF;
-    margin-bottom: 20px;
 }
 
 .btn-secondary:hover {
@@ -152,6 +152,10 @@ body {
     padding: 10px 0;
     background-color: #FFFFFF;
     box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
 }
 
 /* Rodapé Links */
@@ -300,21 +304,26 @@ body {
     box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
 }
 
+.modal-content h2 {
+    margin-bottom: 20px;
+}
+
 .modal-content p {
     font-size: 18px;
     margin-bottom: 30px;
 }
 
 .modal-buttons {
+    margin-top: 20px;
     display: flex;
     justify-content: space-around;
-    gap: 10px;
+    gap: 20px;
 }
 
 .modal-content .btn-primary,
 .modal-content .btn-secondary {
     width: 45%;
-    padding: 10px;
+    padding: 15px;
     font-size: 16px;
 }
 
@@ -431,6 +440,29 @@ body {
     object-fit: contain;
 }
 
+/* Botão Resultado no rodapé */
+.resultado-button-footer {
+    position: absolute;
+    top: 0px;
+    left: 15px;
+}
+
+.resultado-button {
+    background: none;
+    border: none;
+    color: #DAA520;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.3s ease, color 0.3s ease;
+    padding: 10px;
+}
+
+.resultado-button:hover {
+    transform: scale(1.1);
+    color: #FFD700;
+}
+
+/* Responsividade */
 @media (max-width: 768px) {
     /* Esconder a logo fixa no canto inferior direito */
     .logo-atenas-corner {
@@ -455,5 +487,17 @@ body {
     .new-logo {
         width: 200px;
         height: 200px;
+    }
+
+    /* Ajustar botão Resultado para telas pequenas */
+    .resultado-button-footer {
+        position: static;
+        margin-bottom: 10px;
+    }
+
+    .resultado-button {
+        width: 100%;
+        max-width: 200px;
+        text-align: center;
     }
 }

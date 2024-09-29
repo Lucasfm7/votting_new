@@ -67,13 +67,42 @@ function getSaudacao() {
     return saudacao;
 }
 
-// Função para verificar o CPF ou CNPJ
-document.getElementById("cpfForm").addEventListener("submit", async function(event) {
-    event.preventDefault(); // Impede o comportamento padrão de recarregar a página
+// Função para autenticar o usuário
+async function autenticarUsuario(username, password) {
+    const baseUrl = "django-server-production-f3c5.up.railway.app"; // Substitua pela URL do seu servidor
 
-    const cpfCnpj = document.getElementById("cpfCnpj").value.trim();
-    if (cpfCnpj === "") {
-        showNotification("Por favor, insira um CPF ou CNPJ.");
+    try {
+        const response = await fetch(baseUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            return data;
+        } else {
+            throw new Error(data.message || 'Erro na autenticação');
+        }
+    } catch (error) {
+        console.error("Erro ao autenticar:", error);
+        showNotification(`Erro: ${error.message}`);
+        return null;
+    }
+}
+
+// Atualizar o manipulador de submissão do formulário de login
+resultadoLoginForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("resultadoUsername").value.trim();
+    const password = document.getElementById("resultadoPassword").value.trim();
+
+    if (username === "" || password === "") {
+        showNotification("Por favor, preencha todos os campos de login.");
         return;
     }
 
@@ -86,36 +115,60 @@ document.getElementById("cpfForm").addEventListener("submit", async function(eve
     spinner.classList.add("show");
     btnText.classList.add("hidden");
 
-    // Realizar a requisição real
-    setTimeout(async () => {
-        const pessoa = await fetchPersonByCpf(cpfCnpj);
+    // Realizar a requisição de autenticação
+    const resultado = await autenticarUsuario(username, password);
 
-        if (pessoa) {
-            // Exibir o checkmark verde
-            spinner.classList.add("hidden");
-            checkmark.classList.remove("hidden");
-            checkmark.classList.add("show");
+    if (resultado && resultado.success) {
+        // Ocultar animação de espera
+        spinner.classList.add("hidden");
+        checkmark.classList.remove("hidden");
+        checkmark.classList.add("show");
 
-            // Salvando os dados no sessionStorage
-            sessionStorage.setItem("cpfValidado", true);
-            sessionStorage.setItem("validacaoTime", new Date().getTime());
-            sessionStorage.setItem("nomePessoa", pessoa.nome || '');
-            sessionStorage.setItem("empresaPessoa", pessoa.empresa || '');
+        // Salvar estado de login no sessionStorage
+        sessionStorage.setItem("resultadoLogado", true);
+        sessionStorage.setItem("resultadoUsuario", username);
 
-            // Gerando saudação e salvando
-            const saudacao = getSaudacao();
-            sessionStorage.setItem("saudacao", saudacao);
+        // Fechar o modal
+        resultadoModal.classList.remove("show");
+        resultadoModal.classList.add("hidden");
 
-            // Aguardar um pouco para exibir o checkmark antes de redirecionar
-            setTimeout(() => {
-                window.location.href = 'index_form.html'; // Redirecionar para a página seguinte
-            }, 1000); // 1 segundo de espera para mostrar o checkmark
+        // Redirecionar para a página de resultados
+        setTimeout(() => {
+            window.location.href = 'index_login.html'; // Substitua pelo nome correto da página de resultados
+        }, 1000); // 1 segundo de espera para mostrar o checkmark
 
-        } else {
-            // Ocultar animação de espera
-            spinner.classList.add("hidden");
-            btnText.classList.remove("hidden");
-            showNotification("CPF não encontrado.");
-        }
-    }, 1500);  // Simulação de atraso na resposta
+    } else {
+        // Ocultar animação de espera
+        spinner.classList.add("hidden");
+        btnText.classList.remove("hidden");
+        showNotification("Usuário ou senha inválidos.");
+    }
+});
+
+// Funções para o botão Resultado
+
+// Elementos do modal Resultado
+const resultadoButton = document.querySelector(".resultado-button");
+const resultadoModal = document.getElementById("resultadoModal");
+const btnCancelarResultado = document.getElementById("btnCancelarResultado");
+const resultadoLoginForm = document.getElementById("resultadoLoginForm");
+
+// Abrir o modal Resultado ao clicar no botão
+resultadoButton.addEventListener("click", () => {
+    resultadoModal.classList.remove("hidden");
+    resultadoModal.classList.add("show");
+});
+
+// Fechar o modal Resultado ao clicar em Cancelar
+btnCancelarResultado.addEventListener("click", () => {
+    resultadoModal.classList.remove("show");
+    resultadoModal.classList.add("hidden");
+});
+
+// Fechar o modal ao clicar fora do conteúdo
+window.addEventListener("click", (event) => {
+    if (event.target === resultadoModal) {
+        resultadoModal.classList.remove("show");
+        resultadoModal.classList.add("hidden");
+    }
 });

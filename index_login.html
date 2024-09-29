@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados da Votação</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Inclusão do Chart.js e plugin para exibir os rótulos via CDN -->
+    <link rel="stylesheet" href="style_login.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+</head>
+<body>
+    <!-- Conteúdo dos resultados -->
+    <div class="resultados-container">
+        <h1>Resultados da Votação 2024</h1>
+
+        <!-- Seção de Percentual de Votantes -->
+        <div id="percentual-votantes" class="percentual-container">
+            <h2>Participação dos Votantes</h2>
+            <p id="percentual-text">Carregando...</p>
+        </div>
+
+        <!-- Seção de Resultados por Candidato -->
+        <div id="resultados-candidatos" class="candidatos-container">
+            <h2>Votos por Candidato</h2>
+            <canvas id="candidatos-chart"></canvas>
+        </div>
+    </div>
+
+    <!-- Script para verificação de autenticação e carregamento dos resultados -->
+    <script src="script_login.js"></script>
+</body>
+</html>
