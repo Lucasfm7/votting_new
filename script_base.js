@@ -67,42 +67,13 @@ function getSaudacao() {
     return saudacao;
 }
 
-// Função para autenticar o usuário
-async function autenticarUsuario(username, password) {
-    const baseUrl = "django-server-production-f3c5.up.railway.app"; // Substitua pela URL do seu servidor
+// Função para verificar o CPF ou CNPJ
+document.getElementById("cpfForm").addEventListener("submit", async function(event) {
+    event.preventDefault(); // Impede o comportamento padrão de recarregar a página
 
-    try {
-        const response = await fetch(baseUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, password }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-            return data;
-        } else {
-            throw new Error(data.message || 'Erro na autenticação');
-        }
-    } catch (error) {
-        console.error("Erro ao autenticar:", error);
-        showNotification(`Erro: ${error.message}`);
-        return null;
-    }
-}
-
-// Atualizar o manipulador de submissão do formulário de login
-resultadoLoginForm.addEventListener("submit", async function(event) {
-    event.preventDefault();
-
-    const username = document.getElementById("resultadoUsername").value.trim();
-    const password = document.getElementById("resultadoPassword").value.trim();
-
-    if (username === "" || password === "") {
-        showNotification("Por favor, preencha todos os campos de login.");
+    const cpfCnpj = document.getElementById("cpfCnpj").value.trim();
+    if (cpfCnpj === "") {
+        showNotification("Por favor, insira um CPF ou CNPJ.");
         return;
     }
 
@@ -115,37 +86,39 @@ resultadoLoginForm.addEventListener("submit", async function(event) {
     spinner.classList.add("show");
     btnText.classList.add("hidden");
 
-    // Realizar a requisição de autenticação
-    const resultado = await autenticarUsuario(username, password);
+    // Realizar a requisição real
+    setTimeout(async () => {
+        const pessoa = await fetchPersonByCpf(cpfCnpj);
 
-    if (resultado && resultado.success) {
-        // Ocultar animação de espera
-        spinner.classList.add("hidden");
-        checkmark.classList.remove("hidden");
-        checkmark.classList.add("show");
+        if (pessoa) {
+            // Exibir o checkmark verde
+            spinner.classList.add("hidden");
+            checkmark.classList.remove("hidden");
+            checkmark.classList.add("show");
 
-        // Salvar estado de login no sessionStorage
-        sessionStorage.setItem("resultadoLogado", true);
-        sessionStorage.setItem("resultadoUsuario", username);
+            // Salvando os dados no sessionStorage
+            sessionStorage.setItem("cpfValidado", true);
+            sessionStorage.setItem("validacaoTime", new Date().getTime());
+            sessionStorage.setItem("nomePessoa", pessoa.nome || '');
+            sessionStorage.setItem("empresaPessoa", pessoa.empresa || '');
 
-        // Fechar o modal
-        resultadoModal.classList.remove("show");
-        resultadoModal.classList.add("hidden");
+            // Gerando saudação e salvando
+            const saudacao = getSaudacao();
+            sessionStorage.setItem("saudacao", saudacao);
 
-        // Redirecionar para a página de resultados
-        setTimeout(() => {
-            window.location.href = 'index_login.html'; // Substitua pelo nome correto da página de resultados
-        }, 1000); // 1 segundo de espera para mostrar o checkmark
+            // Aguardar um pouco para exibir o checkmark antes de redirecionar
+            setTimeout(() => {
+                window.location.href = 'index_form.html'; // Redirecionar para a página seguinte
+            }, 1000); // 1 segundo de espera para mostrar o checkmark
 
-    } else {
-        // Ocultar animação de espera
-        spinner.classList.add("hidden");
-        btnText.classList.remove("hidden");
-        showNotification("Usuário ou senha inválidos.");
-    }
+        } else {
+            // Ocultar animação de espera
+            spinner.classList.add("hidden");
+            btnText.classList.remove("hidden");
+            showNotification("CPF não encontrado.");
+        }
+    }, 1500);  // Simulação de atraso na resposta
 });
-
-// Funções para o botão Resultado
 
 // Elementos do modal Resultado
 const resultadoButton = document.querySelector(".resultado-button");
@@ -172,3 +145,50 @@ window.addEventListener("click", (event) => {
         resultadoModal.classList.add("hidden");
     }
 });
+
+// Handle login form submission
+resultadoLoginForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("resultadoUsername").value.trim();
+    const password = document.getElementById("resultadoPassword").value.trim();
+
+    if (username === "" || password === "") {
+        showNotification("Por favor, preencha todos os campos de login.");
+        return;
+    }
+
+    try {
+        const response = await fetch('https://django-server-production-f3c5.up.railway.app/api/admin/login/', { // Atualize a URL conforme seu endpoint
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+                // Salvar estado de login no sessionStorage
+                sessionStorage.setItem("resultadoLogado", true);
+                sessionStorage.setItem("resultadoUsuario", username);
+
+                // Fechar o modal
+                resultadoModal.classList.remove("show");
+                resultadoModal.classList.add("hidden");
+
+                // Redirecionar para a página de resultados
+                window.location.href = 'index_login.html'; // Substitua pelo nome correto da página de resultados
+            } else {
+                showNotification("Usuário ou senha inválidos.");
+            }
+        } else {
+            showNotification("Erro na autenticação. Tente novamente mais tarde.");
+        }
+    } catch (error) {
+        console.error("Erro na requisição de login:", error);
+        showNotification("Erro ao tentar fazer login.");
+    }
+});
+
