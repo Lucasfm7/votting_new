@@ -1,51 +1,43 @@
-// Lista de nomes dos candidatos com acentos
-const nomesCandidatos = [
-    "Ana Silva",
-    "Bruno Souza",
-    "Carla Oliveira",
-    "Diego Santos",
-    "Eduarda Costa",
-    "Felipe Lima",
-    "Gabriela Alves",
-    "Henrique Rodrigues",
-    "Isabela Ferreira",
-    "João Pereira",
-    "Karina Martins",
-    "Lucas Fernandes",
-    "Mariana Ribeiro",
-    "Nicolas Gomes",
-    "Patrícia Barros"
-];
-
-// Função para remover acentos e espaços dos nomes (utilizado para o nome dos arquivos)
-function removerAcentos(str) {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '_');
-}
-
 // Variável global para armazenar o candidato selecionado
 let candidatoSelecionado = null;
+let candidatos = []; // Armazena os candidatos obtidos da API
+
+// Função para buscar candidatos da API
+async function buscarCandidatos() {
+    try {
+        const response = await fetch('https://django-server-production-f3c5.up.railway.app/api/candidatos/');
+        if (!response.ok) {
+            throw new Error('Erro ao buscar candidatos da API');
+        }
+        const data = await response.json();
+        candidatos = data; // Armazena os candidatos
+        criarCandidatos(); // Cria os candidatos após buscar os dados
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 // Função para criar os cards dos candidatos
 function criarCandidatos() {
     const grid = document.getElementById("candidateGrid");
 
-    nomesCandidatos.forEach((nome, index) => {
+    candidatos.forEach((candidato) => {
         // Cria o elemento do card
         const card = document.createElement("div");
         card.classList.add("candidate-card");
-        card.dataset.index = index;
+        card.dataset.id = candidato.id; // Usa o ID do candidato para identificar
 
         // Remover acentos e espaços do nome para o caminho da imagem
-        const nomeArquivo = removerAcentos(nome);
+        const nomeArquivo = removerAcentos(candidato.nome);
 
         // Cria a imagem, utilizando a pasta 'assets' e o nome corrigido (sem acentos)
         const img = document.createElement("img");
         img.src = `assets/${nomeArquivo}.png`; // Caminho da imagem com base no nome sem acento
-        img.alt = nome; // Nome com acento para exibição
+        img.alt = candidato.nome; // Nome com acento para exibição
 
         // Cria o nome do candidato para exibir corretamente
         const nomeElemento = document.createElement("p");
-        nomeElemento.textContent = nome; // Nome com acento para exibição
+        nomeElemento.textContent = candidato.nome; // Nome com acento para exibição
 
         // Adiciona os elementos ao card
         card.appendChild(img);
@@ -84,7 +76,7 @@ function selecionarCandidato(event) {
 // Função para exibir o modal de confirmação
 function exibirModalConfirmacao() {
     const modal = document.getElementById("confirmationModal");
-    const nomeCandidato = nomesCandidatos[candidatoSelecionado.dataset.index];
+    const nomeCandidato = candidatos.find(c => c.id == candidatoSelecionado.dataset.id).nome;
     document.getElementById("selectedCandidateName").textContent = nomeCandidato;
     modal.classList.remove("hidden");
 }
@@ -101,7 +93,7 @@ function exibirAnimacaoSucesso() {
     const imgCandidato = document.getElementById("candidateImage");
 
     // Atualiza a imagem e exibe a animação
-    const nomeArquivo = removerAcentos(nomesCandidatos[candidatoSelecionado.dataset.index]);
+    const nomeArquivo = removerAcentos(candidatos.find(c => c.id == candidatoSelecionado.dataset.id).nome);
     imgCandidato.src = `assets/${nomeArquivo}.png`;
 
     animacao.classList.remove("hidden");
@@ -125,5 +117,5 @@ document.getElementById("backButton").addEventListener("click", () => {
     window.location.href = "index_base.html";
 });
 
-// Chama a função para criar os candidatos ao carregar a página
-document.addEventListener("DOMContentLoaded", criarCandidatos);
+// Chama a função para buscar os candidatos ao carregar a página
+document.addEventListener("DOMContentLoaded", buscarCandidatos);
