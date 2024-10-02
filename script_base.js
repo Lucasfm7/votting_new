@@ -26,8 +26,6 @@ async function fetchPersonByCpf(cpf) {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                // 'Content-Type' não é necessário para GET
-                // 'Origin' geralmente é gerenciado automaticamente pelo navegador
             },
         });
 
@@ -41,10 +39,14 @@ async function fetchPersonByCpf(cpf) {
         }
 
         const data = await response.json();
+        console.log("Dados recebidos da API:", data); // Log para depuração
 
-        // Verificação de `ja_votou` dentro da função
-        if (data.ja_votou === true || data.ja_votou === 1) {
-            showNotification("Você já votou e não pode votar novamente.");
+        // Interpretação genérica de `ja_votou`
+        const jaVotou = data.ja_votou;
+        const jaVotouInterpretado = jaVotou === true || jaVotou === 1 || jaVotou === '1';
+
+        if (jaVotouInterpretado) {
+            showNotification("Você já votou e não pode votar novamente.", true);
             throw new Error("Já votou");
         }
 
@@ -58,6 +60,7 @@ async function fetchPersonByCpf(cpf) {
         return null;
     }
 }
+
 
 // Função para gerar a saudação baseada no horário
 function getSaudacao() {
