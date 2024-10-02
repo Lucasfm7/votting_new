@@ -59,8 +59,6 @@ async function fetchPersonByCpf(cpf) {
     }
 }
 
-
-
 // Função para gerar a saudação baseada no horário
 function getSaudacao() {
     const now = new Date();
@@ -92,16 +90,20 @@ document.getElementById("cpfForm").addEventListener("submit", async function(eve
     const spinner = document.getElementById("spinner");
     const btnText = document.getElementById("btnText");
     const checkmark = document.getElementById("checkmark");
+    const btnAvancar = document.getElementById("btnAvancar"); // Adicionado para desabilitar o botão
 
     spinner.classList.remove("hidden");
     spinner.classList.add("show");
     btnText.classList.add("hidden");
     checkmark.classList.add("hidden"); // Garantir que o checkmark está oculto inicialmente
+    btnAvancar.disabled = true; // Desabilitar o botão para evitar múltiplos cliques
 
     try {
-        const pessoa = await fetchPersonByCpf(cpfCnpj);
+        const response = await fetchPersonByCpf(cpfCnpj);
 
-        if (pessoa) {
+        if (response.status === 'success') {
+            const pessoa = response.data;
+
             // Exibir o checkmark verde
             spinner.classList.add("hidden");
             checkmark.classList.remove("hidden");
@@ -122,20 +124,33 @@ document.getElementById("cpfForm").addEventListener("submit", async function(eve
                 window.location.href = 'index_form.html'; // Redirecionar para a página de votação
             }, 1000); // 1 segundo de espera para mostrar o checkmark
 
-        } else {
+        } else if (response.status === 'ja_votou') {
+            // Já votou, a notificação já foi exibida
+            spinner.classList.add("hidden");
+            btnText.classList.remove("hidden");
+            btnAvancar.disabled = false; // Reabilitar o botão
+
+            // Opcional: Redirecionar para uma página informativa
+            setTimeout(() => {
+                window.location.href = 'already_voted.html'; // Redirecionar para a página informativa
+            }, 2000); // 2 segundos de espera para mostrar a notificação
+
+        } else if (response.status === 'error') {
             // Ocultar animação de espera
             spinner.classList.add("hidden");
             btnText.classList.remove("hidden");
-            showNotification("CPF não encontrado.");
+            showNotification(response.message);
+            btnAvancar.disabled = false; // Reabilitar o botão
         }
+
     } catch (error) {
         // Ocultar animação de espera e exibir o botão novamente
         spinner.classList.add("hidden");
         btnText.classList.remove("hidden");
+        btnAvancar.disabled = false; // Reabilitar o botão
         // A notificação já foi exibida na função fetchPersonByCpf
     }
 });
-
 
 // Elementos do modal Resultado
 const resultadoButton = document.querySelector(".resultado-button");
@@ -208,4 +223,3 @@ resultadoLoginForm.addEventListener("submit", async function(event) {
         showNotification("Erro ao tentar fazer login.");
     }
 });
-
