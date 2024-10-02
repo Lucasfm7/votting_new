@@ -130,11 +130,6 @@ document.getElementById("cpfForm").addEventListener("submit", async function(eve
             btnText.classList.remove("hidden");
             btnAvancar.disabled = false; // Reabilitar o botão
 
-            // Opcional: Redirecionar para uma página informativa
-            setTimeout(() => {
-                window.location.href = 'already_voted.html'; // Redirecionar para a página informativa
-            }, 2000); // 2 segundos de espera para mostrar a notificação
-
         } else if (response.status === 'error') {
             // Ocultar animação de espera
             spinner.classList.add("hidden");
