@@ -1,5 +1,4 @@
 // Função para exibir a notificação com esmaecimento
-// Função para exibir a notificação com esmaecimento
 function showNotification(message, isError = true) {
     const notificationBanner = document.getElementById("notificationBanner");
     notificationBanner.textContent = message;
@@ -59,6 +58,7 @@ async function fetchPersonByCpf(cpf) {
         return { status: 'error', message: `Erro ao buscar CPF. ${error.message}` };
     }
 }
+
 
 
 // Função para gerar a saudação baseada no horário
