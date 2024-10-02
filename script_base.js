@@ -1,9 +1,9 @@
 // Função para exibir a notificação com esmaecimento
-function showNotification(message) {
+function showNotification(message, isError = true) {
     const notificationBanner = document.getElementById("notificationBanner");
     notificationBanner.textContent = message;
-    notificationBanner.classList.remove("hidden");
-    notificationBanner.classList.add("show");
+    notificationBanner.classList.remove("hidden", "success");
+    notificationBanner.classList.add("show", isError ? "error" : "success");
 
     // Esconder o banner após 3 segundos com fade-out
     setTimeout(() => {
@@ -19,15 +19,15 @@ function showNotification(message) {
 // Função para realizar a requisição GET com o CPF
 async function fetchPersonByCpf(cpf) {
     const baseUrl = "https://django-server-production-f3c5.up.railway.app/api/pessoas/pesquisar_cpf/";
-    const params = { cpf: cpf.replace(/\D/g, '') }; // Remove a formatação e envia apenas números
+    const cpfNumeros = cpf.replace(/\D/g, ''); // Remove a formatação e envia apenas números
 
     try {
-        const response = await fetch(`${baseUrl}?cpf=${params.cpf}`, {
+        const response = await fetch(`${baseUrl}?cpf=${cpfNumeros}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Origin': window.location.origin,  // Inclui a origem da requisição
+                // 'Content-Type' não é necessário para GET
+                // 'Origin' geralmente é gerenciado automaticamente pelo navegador
             },
         });
 
@@ -45,7 +45,7 @@ async function fetchPersonByCpf(cpf) {
 
     } catch (error) {
         console.error("Erro ao realizar a requisição:", error);
-        showNotification(`Erro ao buscar CPF. Status: ${error.message}`);
+        showNotification(`Erro ao buscar CPF. ${error.message}`);
         return null;
     }
 }
@@ -87,13 +87,12 @@ document.getElementById("cpfForm").addEventListener("submit", async function(eve
     btnText.classList.add("hidden");
     checkmark.classList.add("hidden"); // Garantir que o checkmark está oculto inicialmente
 
-    // Realizar a requisição real
-    setTimeout(async () => {
+    try {
         const pessoa = await fetchPersonByCpf(cpfCnpj);
 
         if (pessoa) {
             // Verificar se a pessoa já votou
-            if (pessoa.ja_votou) {
+            if (pessoa.ja_votou === true || pessoa.ja_votou === 1) {
                 // Ocultar animação de espera e exibir o botão
                 spinner.classList.add("hidden");
                 btnText.classList.remove("hidden");
@@ -135,7 +134,12 @@ document.getElementById("cpfForm").addEventListener("submit", async function(eve
             btnText.classList.remove("hidden");
             showNotification("CPF não encontrado.");
         }
-    }, 1500);  // Simulação de atraso na resposta
+    } catch (error) {
+        // Garantir que a animação de espera seja escondida em caso de erro
+        spinner.classList.add("hidden");
+        btnText.classList.remove("hidden");
+        // A notificação já foi exibida na função fetchPersonByCpf
+    }
 });
 
 // Elementos do modal Resultado
