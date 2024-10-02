@@ -85,12 +85,30 @@ document.getElementById("cpfForm").addEventListener("submit", async function(eve
     spinner.classList.remove("hidden");
     spinner.classList.add("show");
     btnText.classList.add("hidden");
+    checkmark.classList.add("hidden"); // Garantir que o checkmark está oculto inicialmente
 
     // Realizar a requisição real
     setTimeout(async () => {
         const pessoa = await fetchPersonByCpf(cpfCnpj);
 
         if (pessoa) {
+            // Verificar se a pessoa já votou
+            if (pessoa.ja_votou) {
+                // Ocultar animação de espera e exibir o botão
+                spinner.classList.add("hidden");
+                btnText.classList.remove("hidden");
+
+                // Mostrar notificação de que já votou
+                showNotification("Você já votou e não pode votar novamente.");
+
+                // Opcional: Redirecionar para uma página informando que já votou
+                setTimeout(() => {
+                    window.location.href = 'already_voted.html'; // Redirecionar para a página informativa
+                }, 2000); // 2 segundos de espera para mostrar a notificação
+
+                return;
+            }
+
             // Exibir o checkmark verde
             spinner.classList.add("hidden");
             checkmark.classList.remove("hidden");
@@ -108,7 +126,7 @@ document.getElementById("cpfForm").addEventListener("submit", async function(eve
 
             // Aguardar um pouco para exibir o checkmark antes de redirecionar
             setTimeout(() => {
-                window.location.href = 'index_form.html'; // Redirecionar para a página seguinte
+                window.location.href = 'index_form.html'; // Redirecionar para a página de votação
             }, 1000); // 1 segundo de espera para mostrar o checkmark
 
         } else {
@@ -191,4 +209,3 @@ resultadoLoginForm.addEventListener("submit", async function(event) {
         showNotification("Erro ao tentar fazer login.");
     }
 });
-
