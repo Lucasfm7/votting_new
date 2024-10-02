@@ -2,7 +2,7 @@
 function showNotification(message, isError = true) {
     const notificationBanner = document.getElementById("notificationBanner");
     notificationBanner.textContent = message;
-    notificationBanner.classList.remove("hidden", "success");
+    notificationBanner.classList.remove("hidden", "success", "error");
     notificationBanner.classList.add("show", isError ? "error" : "success");
 
     // Esconder o banner após 3 segundos com fade-out
@@ -16,7 +16,7 @@ function showNotification(message, isError = true) {
     }, 3000);
 }
 
-// Função para realizar a requisição GET com o CPF
+// Função para realizar a requisição GET com o CPF e verificar `ja_votou`
 async function fetchPersonByCpf(cpf) {
     const baseUrl = "https://django-server-production-f3c5.up.railway.app/api/pessoas/pesquisar_cpf/";
     const cpfNumeros = cpf.replace(/\D/g, ''); // Remove a formatação e envia apenas números
@@ -41,11 +41,20 @@ async function fetchPersonByCpf(cpf) {
         }
 
         const data = await response.json();
+
+        // Verificação de `ja_votou` dentro da função
+        if (data.ja_votou === true || data.ja_votou === 1) {
+            showNotification("Você já votou e não pode votar novamente.");
+            throw new Error("Já votou");
+        }
+
         return data;
 
     } catch (error) {
         console.error("Erro ao realizar a requisição:", error);
-        showNotification(`Erro ao buscar CPF. ${error.message}`);
+        if (error.message !== "Já votou") { // Evita duplicar notificações para "Já votou"
+            showNotification(`Erro ao buscar CPF. ${error.message}`);
+        }
         return null;
     }
 }
@@ -91,23 +100,6 @@ document.getElementById("cpfForm").addEventListener("submit", async function(eve
         const pessoa = await fetchPersonByCpf(cpfCnpj);
 
         if (pessoa) {
-            // Verificar se a pessoa já votou
-            if (pessoa.ja_votou === true || pessoa.ja_votou === 1) {
-                // Ocultar animação de espera e exibir o botão
-                spinner.classList.add("hidden");
-                btnText.classList.remove("hidden");
-
-                // Mostrar notificação de que já votou
-                showNotification("Você já votou e não pode votar novamente.");
-
-                // Opcional: Redirecionar para uma página informando que já votou
-                setTimeout(() => {
-                    window.location.href = 'already_voted.html'; // Redirecionar para a página informativa
-                }, 2000); // 2 segundos de espera para mostrar a notificação
-
-                return;
-            }
-
             // Exibir o checkmark verde
             spinner.classList.add("hidden");
             checkmark.classList.remove("hidden");
@@ -135,12 +127,13 @@ document.getElementById("cpfForm").addEventListener("submit", async function(eve
             showNotification("CPF não encontrado.");
         }
     } catch (error) {
-        // Garantir que a animação de espera seja escondida em caso de erro
+        // Ocultar animação de espera e exibir o botão novamente
         spinner.classList.add("hidden");
         btnText.classList.remove("hidden");
         // A notificação já foi exibida na função fetchPersonByCpf
     }
 });
+
 
 // Elementos do modal Resultado
 const resultadoButton = document.querySelector(".resultado-button");
@@ -213,3 +206,4 @@ resultadoLoginForm.addEventListener("submit", async function(event) {
         showNotification("Erro ao tentar fazer login.");
     }
 });
+
