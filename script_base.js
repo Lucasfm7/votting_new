@@ -1,4 +1,5 @@
 // Função para exibir a notificação com esmaecimento
+// Função para exibir a notificação com esmaecimento
 function showNotification(message, isError = true) {
     const notificationBanner = document.getElementById("notificationBanner");
     notificationBanner.textContent = message;
@@ -31,11 +32,12 @@ async function fetchPersonByCpf(cpf) {
 
         if (!response.ok) {
             if (response.status === 403) {
-                showNotification("Acesso negado. Verifique suas permissões ou se o CSRF está correto.");
+                return { status: 'error', message: "Acesso negado. Verifique suas permissões ou se o CSRF está correto." };
+            } else if (response.status === 404) {
+                return { status: 'error', message: "CPF não encontrado." };
             } else {
-                showNotification(`Erro HTTP! Status: ${response.status}`);
+                return { status: 'error', message: `Erro HTTP! Status: ${response.status}` };
             }
-            throw new Error(`Erro HTTP! Status: ${response.status}`);
         }
 
         const data = await response.json();
@@ -47,17 +49,14 @@ async function fetchPersonByCpf(cpf) {
 
         if (jaVotouInterpretado) {
             showNotification("Você já votou e não pode votar novamente.", true);
-            throw new Error("Já votou");
+            return { status: 'ja_votou' };
         }
 
-        return data;
+        return { status: 'success', data };
 
     } catch (error) {
         console.error("Erro ao realizar a requisição:", error);
-        if (error.message !== "Já votou") { // Evita duplicar notificações para "Já votou"
-            showNotification(`Erro ao buscar CPF. ${error.message}`);
-        }
-        return null;
+        return { status: 'error', message: `Erro ao buscar CPF. ${error.message}` };
     }
 }
 
