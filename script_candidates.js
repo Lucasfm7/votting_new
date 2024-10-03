@@ -7,19 +7,23 @@ let candidatoSelecionado = null;
 // Função para exibir a notificação com esmaecimento
 function showNotification(message) {
     const notificationBanner = document.getElementById("notificationBanner");
-    notificationBanner.textContent = message;
-    notificationBanner.classList.remove("hidden");
-    notificationBanner.classList.add("show");
+    if (notificationBanner) {
+        notificationBanner.textContent = message;
+        notificationBanner.classList.remove("hidden");
+        notificationBanner.classList.add("show");
 
-    // Esconder o banner após 3 segundos com fade-out
-    setTimeout(() => {
-        notificationBanner.classList.remove("show");
-        notificationBanner.classList.add("hide");
+        // Esconder o banner após 3 segundos com fade-out
         setTimeout(() => {
-            notificationBanner.classList.add("hidden");
-            notificationBanner.classList.remove("hide");
-        }, 500); // Tempo para o fade-out
-    }, 3000);
+            notificationBanner.classList.remove("show");
+            notificationBanner.classList.add("hide");
+            setTimeout(() => {
+                notificationBanner.classList.add("hidden");
+                notificationBanner.classList.remove("hide");
+            }, 500); // Tempo para o fade-out
+        }, 3000);
+    } else {
+        console.warn("Elemento 'notificationBanner' não encontrado.");
+    }
 }
 
 // Função para criar os cards dos candidatos a partir dos dados da API
@@ -95,10 +99,10 @@ async function criarCandidatos() {
 
 // Função para registrar o voto
 async function registrarVoto(cpf, candidateId) {
-    const API_URL = "https://django-server-production-f3c5.up.railway.app/api/votos/";
+    const API_URL_VOTOS = "https://django-server-production-f3c5.up.railway.app/api/votos/";
 
     try {
-        const response = await fetch(API_URL, {
+        const response = await fetch(API_URL_VOTOS, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -113,7 +117,7 @@ async function registrarVoto(cpf, candidateId) {
         if (response.ok) {
             const data = await response.json();
             showNotification("Voto registrado com sucesso!");
-            // Definir variável no sessionStorage para indicar que o voto foi registrado
+            // Definir variáveis no sessionStorage para indicar que o voto foi registrado
             sessionStorage.setItem("votoRegistrado", true);
             sessionStorage.setItem("votoCandidato", candidateId);
             // Redirecionar ou atualizar a interface conforme necessário
@@ -183,15 +187,26 @@ function selecionarCandidato(event) {
 // Função para exibir o modal de confirmação
 function exibirModalConfirmacao() {
     const modal = document.getElementById("confirmationModal");
-    const nomeCandidato = candidatoSelecionado.dataset.nome;
-    document.getElementById("selectedCandidateName").textContent = nomeCandidato;
-    modal.classList.remove("hidden");
+    if (modal) {
+        const nomeCandidato = candidatoSelecionado.dataset.nome;
+        const selectedCandidateName = document.getElementById("selectedCandidateName");
+        if (selectedCandidateName) {
+            selectedCandidateName.textContent = nomeCandidato;
+        }
+        modal.classList.remove("hidden");
+    } else {
+        console.warn("Elemento 'confirmationModal' não encontrado.");
+    }
 }
 
 // Função para fechar o modal de confirmação
 function fecharModalConfirmacao() {
     const modal = document.getElementById("confirmationModal");
-    modal.classList.add("hidden");
+    if (modal) {
+        modal.classList.add("hidden");
+    } else {
+        console.warn("Elemento 'confirmationModal' não encontrado.");
+    }
 }
 
 // Função para exibir a animação de sucesso
@@ -199,61 +214,37 @@ function exibirAnimacaoSucesso() {
     const animacao = document.getElementById("successAnimation");
     const imgCandidato = document.getElementById("candidateImage");
 
-    // Atualiza a imagem e exibe a animação
-    const nomeArquivoBase = `candidato_${candidatoSelecionado.dataset.id}`;
-    imgCandidato.src = `assets/${nomeArquivoBase}.png`;
+    if (animacao && imgCandidato && candidatoSelecionado) {
+        // Atualiza a imagem e exibe a animação
+        const nomeArquivoBase = `candidato_${candidatoSelecionado.dataset.id}`;
+        imgCandidato.src = `assets/${nomeArquivoBase}.png`;
 
-    // Tratamento de erro caso a imagem específica também falhe no modal de sucesso
-    imgCandidato.onerror = function() {
-        this.src = `assets/no-perfil.png`;
-        this.classList.add("default-image");
-        this.onerror = null;
-    };
+        // Tratamento de erro caso a imagem específica também falhe no modal de sucesso
+        imgCandidato.onerror = function() {
+            this.src = `assets/no-perfil.png`;
+            this.classList.add("default-image");
+            this.onerror = null;
+        };
 
-    animacao.classList.remove("hidden");
+        animacao.classList.remove("hidden");
 
-    // Definir variável no sessionStorage para indicar que o voto foi registrado
-    sessionStorage.setItem("votoRegistrado", true);
-    sessionStorage.setItem("votoCandidato", candidatoSelecionado.dataset.id);
+        // Definir variável no sessionStorage para indicar que o voto foi registrado
+        sessionStorage.setItem("votoRegistrado", true);
+        sessionStorage.setItem("votoCandidato", candidatoSelecionado.dataset.id);
 
-    // Esconde o modal de confirmação
-    fecharModalConfirmacao();
+        // Esconde o modal de confirmação
+        fecharModalConfirmacao();
 
-    // Opcional: Redirecionar após exibir a animação
-    setTimeout(() => {
-        window.location.href = 'success_page.html'; // Substitua pelo URL correto
-    }, 1000); // 1 segundo de espera para mostrar a animação
+        // Opcional: Redirecionar após exibir a animação
+        setTimeout(() => {
+            window.location.href = 'success_page.html'; // Substitua pelo URL correto
+        }, 1000); // 1 segundo de espera para mostrar a animação
+    } else {
+        console.warn("Elementos necessários para a animação de sucesso não foram encontrados ou nenhum candidato foi selecionado.");
+    }
 }
 
 // Eventos para os botões
-document.getElementById("confirmVoteButton").addEventListener("click", exibirAnimacaoSucesso);
-document.getElementById("cancelVoteButton").addEventListener("click", fecharModalConfirmacao);
-document.getElementById("confirmButton").addEventListener("click", exibirModalConfirmacao);
-document.getElementById("backButton").addEventListener("click", () => {
-    // Redireciona para a página inicial (ou qualquer outra ação que você queira realizar)
-    window.location.href = "index_base.html";
-});
-
-// Evento para o botão de confirmação de voto
-document.getElementById("confirmButton").addEventListener("click", () => {
-    const cpfValidado = sessionStorage.getItem("cpfValidado");
-    const nomePessoa = sessionStorage.getItem("nomePessoa");
-    const empresaPessoa = sessionStorage.getItem("empresaPessoa");
-
-    if (cpfValidado) {
-        const cpf = "123.456.789-00"; // Substitua pelo CPF real validado
-        const candidateId = candidatoSelecionado.dataset.id;
-
-        // Registrar o voto via API
-        registrarVoto(cpf, candidateId);
-    } else {
-        showNotification("CPF não validado. Por favor, valide seu CPF antes de votar.");
-        // Redirecionar para a página de validação de CPF
-        window.location.href = 'cpf_validation.html'; // Substitua pelo URL correto
-    }
-});
-
-// Chama a função para criar os candidatos ao carregar a página
 document.addEventListener("DOMContentLoaded", () => {
     // Verificar se o CPF foi validado
     if (!isCpfValidado()) {
@@ -261,9 +252,12 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = 'cpf_validation.html'; // Substitua pela página correta
     } else {
         // Exibir saudação personalizada
-        const saudacao = sessionStorage.getItem("saudacao");
-        if (saudacao) {
-            document.getElementById("saudacao").textContent = saudacao;
+        const saudacao = getSaudacao();
+        const saudacaoElemento = document.getElementById("saudacao");
+        if (saudacaoElemento) {
+            saudacaoElemento.textContent = saudacao;
+        } else {
+            console.warn("Elemento 'saudacao' não encontrado.");
         }
 
         // Carregar candidatos
@@ -274,5 +268,65 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sessionStorage.getItem("votoRegistrado") === 'true') {
         showNotification("Seu voto foi registrado com sucesso!");
         // Opcional: redirecionar ou desabilitar a votação
+    }
+
+    // Adicionar eventos aos botões apenas se eles existirem
+    const confirmVoteButton = document.getElementById("confirmVoteButton");
+    const cancelVoteButton = document.getElementById("cancelVoteButton");
+    const confirmButton = document.getElementById("confirmButton");
+    const backButton = document.getElementById("backButton");
+
+    if (confirmVoteButton) {
+        confirmVoteButton.addEventListener("click", exibirAnimacaoSucesso);
+    } else {
+        console.warn("Elemento 'confirmVoteButton' não encontrado.");
+    }
+
+    if (cancelVoteButton) {
+        cancelVoteButton.addEventListener("click", fecharModalConfirmacao);
+    } else {
+        console.warn("Elemento 'cancelVoteButton' não encontrado.");
+    }
+
+    if (confirmButton) {
+        confirmButton.addEventListener("click", () => {
+            const cpfValidado = sessionStorage.getItem("cpfValidado");
+            // const nomePessoa = sessionStorage.getItem("nomePessoa"); // Não utilizado no momento
+            // const empresaPessoa = sessionStorage.getItem("empresaPessoa"); // Não utilizado no momento
+
+            if (cpfValidado) {
+                // Aqui, você deve obter o CPF validado de forma segura, possivelmente de uma sessão ou variável segura
+                const cpf = sessionStorage.getItem("cpf"); // Ajuste conforme a implementação
+                if (!cpf) {
+                    showNotification("CPF não encontrado. Por favor, valide seu CPF novamente.");
+                    window.location.href = 'cpf_validation.html'; // Substitua pelo URL correto
+                    return;
+                }
+
+                const candidateId = candidatoSelecionado ? candidatoSelecionado.dataset.id : null;
+
+                if (candidateId) {
+                    // Registrar o voto via API
+                    registrarVoto(cpf, candidateId);
+                } else {
+                    showNotification("Nenhum candidato selecionado.");
+                }
+            } else {
+                showNotification("CPF não validado. Por favor, valide seu CPF antes de votar.");
+                // Redirecionar para a página de validação de CPF
+                window.location.href = 'cpf_validation.html'; // Substitua pelo URL correto
+            }
+        });
+    } else {
+        console.warn("Elemento 'confirmButton' não encontrado.");
+    }
+
+    if (backButton) {
+        backButton.addEventListener("click", () => {
+            // Redireciona para a página inicial (ou qualquer outra ação que você queira realizar)
+            window.location.href = "index_base.html";
+        });
+    } else {
+        console.warn("Elemento 'backButton' não encontrado.");
     }
 });
