@@ -40,13 +40,8 @@ function formatPhoneNumber(value) {
 
     let formattedNumber;
 
-    if (value.length <= 10) {
-        // Formata como (XX) 9 8765-4321
-        formattedNumber = value.replace(/(\d{2})(\d)(\d{4})(\d{0,4})/, '($1) $2 $3-$4');
-    } else {
-        // Formata como (XX) 9 8765-4321
-        formattedNumber = value.replace(/(\d{2})(\d)(\d{4})(\d{0,4})/, '($1) $2 $3-$4');
-    }
+    // Formata como (XX) 9 8765-4321
+    formattedNumber = value.replace(/(\d{2})(\d)(\d{4})(\d{0,4})/, '($1) $2 $3-$4');
 
     return formattedNumber;
 }
@@ -131,6 +126,15 @@ function displayGreeting() {
 
 // Função para inicializar o formulário
 function initializeForm() {
+    // Verifica se o CPF/CNPJ está disponível no sessionStorage
+    const cpfCnpj = sessionStorage.getItem("cpfCnpj");
+
+    if (!cpfCnpj) {
+        // Se não estiver disponível, redireciona para a página inicial
+        window.location.href = 'index.html';
+        return;
+    }
+
     displayGreeting();
     initializeTelephoneInput();
 }
@@ -161,6 +165,14 @@ document.getElementById("nameForm").addEventListener("submit", function (event) 
         return;
     }
 
+    // Recupera o CPF/CNPJ do sessionStorage
+    const cpfCnpj = sessionStorage.getItem("cpfCnpj");
+
+    if (!cpfCnpj) {
+        showNotification("CPF/CNPJ não encontrado. Por favor, reinicie o processo.");
+        return;
+    }
+
     // Exibir animação de carregamento no botão
     const spinner = document.getElementById("spinner");
     const btnText = document.getElementById("btnText");
@@ -170,13 +182,18 @@ document.getElementById("nameForm").addEventListener("submit", function (event) 
     spinner.classList.add("show");
     btnText.classList.add("hidden");
 
-    // Enviar o número de telefone para o backend para gerar e enviar o código de verificação
-    fetch('https://django-server-production-f3c5.up.railway.app/api/send_verification_code/', { // URL completa do backend
+    // Enviar os dados para o backend, incluindo o CPF/CNPJ
+    fetch('https://django-server-production-f3c5.up.railway.app/api/send_verification_code/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ phone_number: telefone }),
+        body: JSON.stringify({
+            phone_number: telefone,
+            cpf_cnpj: cpfCnpj,
+            nome: nome,
+            sobrenome: sobrenome
+        }),
     })
     .then(response => response.json().then(data => ({ status: response.status, body: data })))
     .then(({ status, body }) => {
@@ -191,7 +208,7 @@ document.getElementById("nameForm").addEventListener("submit", function (event) 
 
             // Redireciona para a página de verificação de código após um breve intervalo
             setTimeout(() => {
-                window.location.href = "index_code.html"; // Certifique-se de que a página de verificação existe
+                window.location.href = "index_code.html";
             }, 1000); // Aguarda 1 segundo para mostrar o checkmark
         } else {
             // Erro: mostrar a mensagem de erro

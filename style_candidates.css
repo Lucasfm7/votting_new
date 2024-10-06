@@ -10,15 +10,15 @@ body {
     font-family: 'Comfortaa', sans-serif;
     background-color: #F2F2F2;
     display: flex;
-    flex-direction: column; /* Define a direção das colunas */
-    justify-content: space-between; /* Espaço entre o conteúdo e o rodapé */
-    min-height: 100vh; /* Altura mínima de 100% da viewport */
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
     position: relative;
 }
 
 /* Main Content */
 .main-content {
-    flex: 1; /* Flexível para preencher o restante da tela */
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -56,21 +56,21 @@ body {
     cursor: pointer;
     transition: transform 0.3s ease-in-out;
     position: relative;
-    border: 2px solid transparent; /* Adicionado para evitar salto ao selecionar */
-    border-radius: 8px; /* Bordas arredondadas */
-    overflow: hidden; /* Garante que a imagem não ultrapasse o card */
-    background-color: #FFF; /* Fundo branco para destacar o card */
-    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1); /* Sombra leve */
+    border: 2px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #FFF;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .candidate-card img {
     width: 100%;
-    height: 200px; /* Definido para manter consistência */
-    object-fit: fill; /* Mantém a imagem centralizada */
+    height: 200px;
+    object-fit: fill;
     display: block;
     filter: grayscale(100%);
     transition: filter 0.5s ease-in-out;
-    background-color: #EEE; /* Cor de fundo para caso a imagem não carregue */
+    background-color: #EEE;
 }
 
 .candidate-card.selected img,
@@ -87,7 +87,7 @@ body {
 
 /* Indicação de seleção */
 .candidate-card.selected {
-    border: 2px solid #DAA520; /* Cor dourada */
+    border: 2px solid #DAA520;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -118,7 +118,7 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: #DAA520; /* Cor dourada */
+    background-color: #DAA520;
     transform: scale(1.05);
 }
 
@@ -153,26 +153,6 @@ body {
     display: none;
 }
 
-/* Link de contato */
-.contact-link {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #007BFF;
-}
-
-.contact-link a {
-    color: #DAA520; /* Cor dourada */
-    text-decoration: none;
-    transition: transform 0.3s ease-in-out, font-style 0.3s ease-in-out; /* Suave transição no hover */
-}
-
-.contact-link a:hover {
-    transform: scale(1.05); /* Leve zoom */
-    font-style: italic; /* Coloca em itálico ao passar o mouse */
-    font-weight: bold; /* Negrito no hover */
-    color: #FFD700; /* Cor dourada brilhante no hover */
-}
-
 /* Rodapé */
 .footer {
     text-align: center;
@@ -182,7 +162,7 @@ body {
     padding: 10px 0;
     background-color: #FFFFFF;
     box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
-    position: relative; /* Para garantir que esteja no fim da tela */
+    position: relative;
 }
 
 /* Rodapé Links */
@@ -197,7 +177,7 @@ body {
 }
 
 /* Banner de notificação */
-.notification {
+.notification-banner {
     background-color: #f44336;
     color: white;
     text-align: center;
@@ -212,89 +192,20 @@ body {
     transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
 }
 
-.notification.show {
+.notification-banner.show {
     opacity: 1;
     visibility: visible;
 }
 
-.notification.hide {
+.notification-banner.hide {
     opacity: 0;
     visibility: hidden;
-}
-
-/* Fade-in e fade-out para o texto do botão */
-#btnText.fade-out {
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-}
-
-#btnText.fade-in {
-    opacity: 1;
-    transition: opacity 0.5s ease-in-out;
-}
-
-/* Código de verificação */
-.code-inputs {
-    display: flex;
-    justify-content: center;
-    gap: 10px; /* Espaçamento entre os inputs */
-}
-
-.code-input {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
-    text-align: center;
-    border: 1px solid #DDD;
-    border-radius: 4px;
-}
-
-/* Checkmark */
-.checkmark {
-    width: 30px; /* Aumentei o tamanho do checkmark */
-    height: 30px;
-    display: inline-block;
-    vertical-align: middle;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-}
-
-.checkmark.show {
-    opacity: 1;
-}
-
-.checkmark svg {
-    width: 100%;
-    height: 100%;
-}
-
-.checkmark path {
-    stroke: #28a745;
-    stroke-dasharray: 48;
-    stroke-dashoffset: 48;
-    animation: dash 0.5s forwards;
 }
 
 /* Animações */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-@keyframes dash {
-    to {
-        stroke-dashoffset: 0;
-    }
 }
 
 /* Caixa de diálogo modal de confirmação */
@@ -308,7 +219,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 2000; /* Maior que outros elementos */
+    z-index: 2000;
 }
 
 .modal.hidden {
@@ -350,12 +261,12 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.95); /* Fundo mais escuro para melhor visualização */
+    background-color: rgba(0, 0, 0, 0.95);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 3000; /* Maior que modal */
+    z-index: 3000;
     animation: fadeIn 1s forwards;
 }
 
@@ -381,7 +292,7 @@ body {
 
 .success-message h2 {
     font-size: 36px;
-    color: #DAA520; /* Cor dourada */
+    color: #DAA520;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
@@ -390,7 +301,7 @@ body {
     margin-top: 20px;
     padding: 8px 16px;
     background-color: transparent;
-    color: #DAA520; /* Cor dourada */
+    color: #DAA520;
     border: 2px solid #DAA520;
     border-radius: 4px;
     font-size: 14px;
@@ -419,8 +330,8 @@ body {
     position: fixed;
     bottom: -10px;
     right: -10px;
-    width: 100px; /* Tamanho reduzido */
-    height: 100px; /* Tamanho reduzido */
+    width: 100px;
+    height: 100px;
     z-index: 1000;
 }
 
@@ -442,38 +353,6 @@ body {
     width: 100%;
     height: 100%;
     object-fit: contain;
-}
-
-/* Nova Logo abaixo do container */
-.new-logo {
-    width: 200px;
-    height: 200px;
-}
-
-.new-logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-/* Ajustes específicos para intl-tel-input */
-.intl-tel-input {
-    width: 100% !important; /* Garante que o contêiner ocupe 100% da largura */
-    position: relative;
-}
-
-.intl-tel-input input {
-    width: 100% !important; /* Garante que o input ocupe 100% da largura do contêiner */
-    padding-left: 40px !important; /* Ajustado para 40px para acomodar a bandeira */
-    box-sizing: border-box; /* Garantir que padding não afete a largura total */
-}
-
-/* Ajustar o container da bandeira para posicionamento */
-.intl-tel-input .iti__flag-container {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
 }
 
 /* Responsividade */
@@ -502,11 +381,6 @@ body {
         width: 150px;
         height: 150px;
     }
-
-    /* Ajustar max-width para inputs e botão */
-    #nome, #sobrenome, #btnEnviar, .telefone-info, .contact-link {
-        max-width: 250px; /* Reduzido para telas menores */
-    }
 }
 
 /* Indicador de carregamento */
@@ -522,12 +396,10 @@ body {
 
 /* Classe para a imagem padrão */
 .default-image {
-    /* Exemplo de estilo: adicionar uma opacidade menor para diferenciar da imagem real */
     opacity: 0.7;
 }
 
-/* Garantir que o elemento img seja exibido como bloco e não mostre o alt text */
 .candidate-card img {
     display: block;
-    background-color: #EEE; /* Cor de fundo para caso a imagem não carregue */
+    background-color: #EEE;
 }
