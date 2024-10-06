@@ -1,29 +1,30 @@
 // URL da API para obter os candidatos
 const API_URL = "https://django-server-production-f3c5.up.railway.app/api/candidatos/";
 
+// Lista de extensões de imagem a serem tentadas, na ordem de preferência
+const EXTENSOES_IMAGEM = ['png', 'jpg', 'jpeg'];
+
 // Variável global para armazenar o candidato selecionado
 let candidatoSelecionado = null;
 
-// Função para exibir a notificação com esmaecimento
-function showNotification(message) {
-    const notificationBanner = document.getElementById("notificationBanner");
-    if (notificationBanner) {
-        notificationBanner.textContent = message;
-        notificationBanner.classList.remove("hidden");
-        notificationBanner.classList.add("show");
+// Função para exibir notificações (banner no topo)
+function exibirNotificacao(mensagem) {
+    const notification = document.createElement("div");
+    notification.classList.add("notification", "show");
+    notification.textContent = mensagem;
 
-        // Esconder o banner após 3 segundos com fade-out
-        setTimeout(() => {
-            notificationBanner.classList.remove("show");
-            notificationBanner.classList.add("hide");
-            setTimeout(() => {
-                notificationBanner.classList.add("hidden");
-                notificationBanner.classList.remove("hide");
-            }, 500); // Tempo para o fade-out
-        }, 3000);
-    } else {
-        console.warn("Elemento 'notificationBanner' não encontrado.");
-    }
+    document.body.prepend(notification);
+
+    // Ocultar a notificação após 5 segundos
+    setTimeout(() => {
+        notification.classList.remove("show");
+        notification.classList.add("hide");
+
+        // Remover o elemento do DOM após a animação
+        notification.addEventListener("transitionend", () => {
+            notification.remove();
+        });
+    }, 5000);
 }
 
 // Função para criar os cards dos candidatos a partir dos dados da API
@@ -49,26 +50,31 @@ async function criarCandidatos() {
             card.dataset.id = candidato.id; // Usa o ID do candidato
             card.dataset.nome = candidato.nome; // Armazena o nome completo
 
-            // Define o nome do arquivo de imagem baseado no ID para evitar problemas com caracteres
-            const nomeArquivoBase = `candidato_${candidato.id}`;
+            // Define o nome base do arquivo de imagem baseado no ID
+            const nomeBaseArquivo = `candidato_${candidato.id}`;
 
-            // Cria a imagem, utilizando a pasta 'assets' e o nome baseado no ID
+            // Cria a imagem, utilizando a primeira extensão da lista
             const img = document.createElement("img");
-            img.src = `assets/${nomeArquivoBase}.png`; // Inicialmente tenta .png
+            img.dataset.nomeBase = nomeBaseArquivo; // Armazena o nome base para tentativas futuras
+            img.dataset.extIndex = 0; // Índice da extensão atual
+            img.src = `assets/${nomeBaseArquivo}.${EXTENSOES_IMAGEM[0]}`; // Tenta a primeira extensão
             img.alt = candidato.nome; // Nome com acento para exibição
 
-            // Lista de extensões a serem tentadas
-            const extensoes = ['.png', '.jpg', '.jpeg'];
-            let tentativa = 0;
-
+            // Evento para tratar erro no carregamento da imagem
             img.onerror = function() {
-                tentativa++;
-                if (tentativa < extensoes.length) {
+                const currentIndex = parseInt(this.dataset.extIndex);
+                const nextIndex = currentIndex + 1;
+
+                if (nextIndex < EXTENSOES_IMAGEM.length) {
                     // Tenta a próxima extensão
-                    this.src = `assets/${nomeArquivoBase}${extensoes[tentativa]}`;
+                    this.src = `assets/${this.dataset.nomeBase}.${EXTENSOES_IMAGEM[nextIndex]}`;
+                    this.dataset.extIndex = nextIndex;
                 } else {
-                    // Todas as tentativas falharam, usa a imagem padrão
+                    // Se todas as extensões falharem, usa a imagem padrão
                     this.src = `assets/no-perfil.png`;
+                    // Remove o manipulador de erro para evitar loops infinitos caso a no-perfil.png falhe
+                    this.onerror = null;
+                    // Opcional: adicionar uma classe para estilizar a imagem de fallback
                     this.classList.add("default-image");
                 }
             };
@@ -89,11 +95,64 @@ async function criarCandidatos() {
         });
     } catch (error) {
         console.error("Erro ao buscar os candidatos:", error);
-        showNotification("Não foi possível carregar os candidatos. Tente novamente mais tarde.");
+        exibirNotificacao("Não foi possível carregar os candidatos. Tente novamente mais tarde.");
     } finally {
         if (loadingIndicator) {
             loadingIndicator.classList.add("hidden"); // Esconde o indicador de carregamento
         }
+    }
+}
+
+// Função para selecionar um candidato
+function selecionarCandidato(event) {
+    const card = event.currentTarget;
+
+    // Desmarca o candidato anterior
+    if (candidatoSelecionado && candidatoSelecionado !== card) {
+        candidatoSelecionado.classList.remove("selected");
+    }
+
+    // Marca ou desmarca o candidato atual
+    card.classList.toggle("selected");
+
+    // Atualiza o candidato selecionado
+    if (card.classList.contains("selected")) {
+        candidatoSelecionado = card;
+        const confirmButton = document.getElementById("confirmButton");
+        if (confirmButton) {
+            confirmButton.disabled = false;
+        }
+    } else {
+        candidatoSelecionado = null;
+        const confirmButton = document.getElementById("confirmButton");
+        if (confirmButton) {
+            confirmButton.disabled = true;
+        }
+    }
+}
+
+// Função para exibir o modal de confirmação
+function exibirModalConfirmacao() {
+    const modal = document.getElementById("confirmationModal");
+    if (candidatoSelecionado) {
+        const nomeCandidato = candidatoSelecionado.dataset.nome;
+        const selectedCandidateName = document.getElementById("selectedCandidateName");
+        if (selectedCandidateName) {
+            selectedCandidateName.textContent = nomeCandidato;
+        }
+        modal.classList.remove("hidden");
+    } else {
+        exibirNotificacao("Nenhum candidato selecionado.");
+    }
+}
+
+// Função para fechar o modal de confirmação
+function fecharModalConfirmacao() {
+    const modal = document.getElementById("confirmationModal");
+    if (modal) {
+        modal.classList.add("hidden");
+    } else {
+        console.warn("Elemento 'confirmationModal' não encontrado.");
     }
 }
 
@@ -116,33 +175,76 @@ async function registrarVoto(cpf, candidateId) {
 
         if (response.ok) {
             const data = await response.json();
-            showNotification("Voto registrado com sucesso!");
+            exibirNotificacao("Voto registrado com sucesso!");
             // Definir variáveis no sessionStorage para indicar que o voto foi registrado
-            sessionStorage.setItem("votoRegistrado", true);
+            sessionStorage.setItem("votoRegistrado", "true");
             sessionStorage.setItem("votoCandidato", candidateId);
             // Redirecionar ou atualizar a interface conforme necessário
             window.location.href = 'success_page.html'; // Substitua pelo URL correto
         } else {
             const errorData = await response.json();
-            showNotification(`Erro ao registrar voto: ${errorData.detail || 'Tente novamente.'}`);
+            exibirNotificacao(`Erro ao registrar voto: ${errorData.detail || 'Tente novamente.'}`);
         }
     } catch (error) {
         console.error("Erro na requisição de voto:", error);
-        showNotification("Erro ao registrar voto. Tente novamente mais tarde.");
+        exibirNotificacao("Erro ao registrar voto. Tente novamente mais tarde.");
     }
 }
 
-// Função para verificar se o CPF foi validado
-function isCpfValidado() {
-    const cpfValidado = sessionStorage.getItem("cpfValidado");
-    const validacaoTime = sessionStorage.getItem("validacaoTime");
-    if (cpfValidado && validacaoTime) {
-        const agora = new Date().getTime();
-        const tempoDecorrido = agora - parseInt(validacaoTime, 10);
-        const validade = 10 * 60 * 1000; // 10 minutos em milissegundos
-        return tempoDecorrido < validade;
+// Função para exibir a animação de sucesso
+function exibirAnimacaoSucesso() {
+    const animacao = document.getElementById("successAnimation");
+    const imgCandidato = document.getElementById("candidateImage");
+
+    if (animacao && imgCandidato && candidatoSelecionado) {
+        // Atualiza a imagem e exibe a animação
+        const nomeArquivoBase = `candidato_${candidatoSelecionado.dataset.id}`;
+        imgCandidato.dataset.nomeBase = nomeArquivoBase;
+        imgCandidato.dataset.extIndex = 0;
+        imgCandidato.src = `assets/${nomeArquivoBase}.${EXTENSOES_IMAGEM[0]}`;
+
+        // Evento para tratar erro no carregamento da imagem no modal de sucesso
+        imgCandidato.onerror = function() {
+            const currentIndex = parseInt(this.dataset.extIndex);
+            const nextIndex = currentIndex + 1;
+
+            if (nextIndex < EXTENSOES_IMAGEM.length) {
+                // Tenta a próxima extensão
+                this.src = `assets/${this.dataset.nomeBase}.${EXTENSOES_IMAGEM[nextIndex]}`;
+                this.dataset.extIndex = nextIndex;
+            } else {
+                // Se todas as extensões falharem, usa a imagem padrão
+                this.src = `assets/no-perfil.png`;
+                // Remove o manipulador de erro para evitar loops infinitos caso a no-perfil.png falhe
+                this.onerror = null;
+                // Opcional: adicionar uma classe para estilizar a imagem de fallback
+                this.classList.add("default-image");
+            }
+        };
+
+        animacao.classList.remove("hidden");
+
+        // Esconde o modal de confirmação
+        fecharModalConfirmacao();
+
+        // Opcional: Redirecionar após exibir a animação
+        setTimeout(() => {
+            window.location.href = 'success_page.html'; // Substitua pelo URL correto
+        }, 1000); // 1 segundo de espera para mostrar a animação
+    } else {
+        console.warn("Elementos necessários para a animação de sucesso não foram encontrados ou nenhum candidato foi selecionado.");
     }
-    return false;
+}
+
+// Função para exibir a saudação personalizada
+function displayGreeting() {
+    const saudacao = getSaudacao();
+    const saudacaoElemento = document.getElementById("saudacao");
+    if (saudacaoElemento) {
+        saudacaoElemento.textContent = saudacao;
+    } else {
+        console.warn("Elemento 'saudacao' não encontrado.");
+    }
 }
 
 // Função para gerar a saudação baseada no horário
@@ -162,163 +264,42 @@ function getSaudacao() {
     return saudacao;
 }
 
-// Função para selecionar um candidato
-function selecionarCandidato(event) {
-    const card = event.currentTarget;
+// Evento para o botão de confirmação de voto no modal
+function configurarConfirmarVoto() {
+    const confirmarVotoButton = document.getElementById("confirmVoteButton");
+    if (confirmarVotoButton) {
+        confirmarVotoButton.addEventListener("click", () => {
+            const cpf = sessionStorage.getItem("cpf"); // Assegure-se que o CPF foi armazenado anteriormente
 
-    // Desmarca o candidato anterior
-    if (candidatoSelecionado && candidatoSelecionado !== card) {
-        candidatoSelecionado.classList.remove("selected");
-    }
+            if (!cpf) {
+                exibirNotificacao("CPF não encontrado. Por favor, valide seu CPF novamente.");
+                window.location.href = 'index_base.html'; // Redirecione para a página inicial
+                return;
+            }
 
-    // Marca ou desmarca o candidato atual
-    card.classList.toggle("selected");
+            const candidateId = candidatoSelecionado ? candidatoSelecionado.dataset.id : null;
 
-    // Atualiza o candidato selecionado
-    if (card.classList.contains("selected")) {
-        candidatoSelecionado = card;
-        document.getElementById("confirmButton").disabled = false;
-    } else {
-        candidatoSelecionado = null;
-        document.getElementById("confirmButton").disabled = true;
-    }
-}
-
-// Função para exibir o modal de confirmação
-function exibirModalConfirmacao() {
-    const modal = document.getElementById("confirmationModal");
-    if (modal) {
-        const nomeCandidato = candidatoSelecionado.dataset.nome;
-        const selectedCandidateName = document.getElementById("selectedCandidateName");
-        if (selectedCandidateName) {
-            selectedCandidateName.textContent = nomeCandidato;
-        }
-        modal.classList.remove("hidden");
-    } else {
-        console.warn("Elemento 'confirmationModal' não encontrado.");
-    }
-}
-
-// Função para fechar o modal de confirmação
-function fecharModalConfirmacao() {
-    const modal = document.getElementById("confirmationModal");
-    if (modal) {
-        modal.classList.add("hidden");
-    } else {
-        console.warn("Elemento 'confirmationModal' não encontrado.");
-    }
-}
-
-// Função para exibir a animação de sucesso
-function exibirAnimacaoSucesso() {
-    const animacao = document.getElementById("successAnimation");
-    const imgCandidato = document.getElementById("candidateImage");
-
-    if (animacao && imgCandidato && candidatoSelecionado) {
-        // Atualiza a imagem e exibe a animação
-        const nomeArquivoBase = `candidato_${candidatoSelecionado.dataset.id}`;
-        imgCandidato.src = `assets/${nomeArquivoBase}.png`;
-
-        // Tratamento de erro caso a imagem específica também falhe no modal de sucesso
-        imgCandidato.onerror = function() {
-            this.src = `assets/no-perfil.png`;
-            this.classList.add("default-image");
-            this.onerror = null;
-        };
-
-        animacao.classList.remove("hidden");
-
-        // Definir variável no sessionStorage para indicar que o voto foi registrado
-        sessionStorage.setItem("votoRegistrado", true);
-        sessionStorage.setItem("votoCandidato", candidatoSelecionado.dataset.id);
-
-        // Esconde o modal de confirmação
-        fecharModalConfirmacao();
-
-        // Opcional: Redirecionar após exibir a animação
-        setTimeout(() => {
-            window.location.href = 'success_page.html'; // Substitua pelo URL correto
-        }, 1000); // 1 segundo de espera para mostrar a animação
-    } else {
-        console.warn("Elementos necessários para a animação de sucesso não foram encontrados ou nenhum candidato foi selecionado.");
-    }
-}
-
-// Eventos para os botões
-document.addEventListener("DOMContentLoaded", () => {
-    // Verificar se o CPF foi validado
-    if (!isCpfValidado()) {
-        showNotification("Sua validação expirou ou não foi realizada. Por favor, valide seu CPF.");
-        window.location.href = 'index_base.html'; // Substitua pela página inicial correta
-    } else {
-        // Exibir saudação personalizada
-        const saudacao = getSaudacao();
-        const saudacaoElemento = document.getElementById("saudacao");
-        if (saudacaoElemento) {
-            saudacaoElemento.textContent = saudacao;
-        } else {
-            console.warn("Elemento 'saudacao' não encontrado.");
-        }
-
-        // Carregar candidatos
-        criarCandidatos();
-    }
-
-    // Verificar se o voto foi registrado
-    if (sessionStorage.getItem("votoRegistrado") === 'true') {
-        showNotification("Seu voto foi registrado com sucesso!");
-        // Opcional: redirecionar ou desabilitar a votação
-    }
-
-    // Adicionar eventos aos botões apenas se eles existirem
-    const confirmVoteButton = document.getElementById("confirmVoteButton");
-    const cancelVoteButton = document.getElementById("cancelVoteButton");
-    const confirmButton = document.getElementById("confirmButton");
-    const backButton = document.getElementById("backButton");
-
-    if (confirmVoteButton) {
-        confirmVoteButton.addEventListener("click", exibirAnimacaoSucesso);
+            if (candidateId) {
+                // Registrar o voto via API
+                registrarVoto(cpf, candidateId);
+            } else {
+                exibirNotificacao("Nenhum candidato selecionado.");
+            }
+        });
     } else {
         console.warn("Elemento 'confirmVoteButton' não encontrado.");
     }
+}
+
+// Eventos para os botões de confirmação e cancelamento no modal e outros
+function configurarEventosBotoes() {
+    const cancelVoteButton = document.getElementById("cancelVoteButton");
+    const backButton = document.getElementById("backButton");
 
     if (cancelVoteButton) {
         cancelVoteButton.addEventListener("click", fecharModalConfirmacao);
     } else {
         console.warn("Elemento 'cancelVoteButton' não encontrado.");
-    }
-
-    if (confirmButton) {
-        confirmButton.addEventListener("click", () => {
-            const cpfValidado = sessionStorage.getItem("cpfValidado");
-            // const nomePessoa = sessionStorage.getItem("nomePessoa"); // Não utilizado no momento
-            // const empresaPessoa = sessionStorage.getItem("empresaPessoa"); // Não utilizado no momento
-
-            if (cpfValidado) {
-                // Aqui, você deve obter o CPF validado de forma segura, possivelmente de uma sessão ou variável segura
-                const cpf = sessionStorage.getItem("cpf"); // Ajuste conforme a implementação
-                if (!cpf) {
-                    showNotification("CPF não encontrado. Por favor, valide seu CPF novamente.");
-                    window.location.href = 'index_base.html'; // Substitua pelo URL correto
-                    return;
-                }
-
-                const candidateId = candidatoSelecionado ? candidatoSelecionado.dataset.id : null;
-
-                if (candidateId) {
-                    // Registrar o voto via API
-                    registrarVoto(cpf, candidateId);
-                } else {
-                    showNotification("Nenhum candidato selecionado.");
-                }
-            } else {
-                showNotification("CPF não validado. Por favor, valide seu CPF antes de votar.");
-                // Redirecionar para a página inicial de validação de CPF
-                window.location.href = 'index_base.html'; // Substitua pelo URL correto
-            }
-        });
-    } else {
-        console.warn("Elemento 'confirmButton' não encontrado.");
     }
 
     if (backButton) {
@@ -329,4 +310,34 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         console.warn("Elemento 'backButton' não encontrado.");
     }
+}
+
+// Função para configurar os event listeners
+function configurarEventListeners() {
+    const confirmButton = document.getElementById("confirmButton");
+    if (confirmButton) {
+        confirmButton.addEventListener("click", exibirModalConfirmacao);
+    } else {
+        console.warn("Elemento 'confirmButton' não encontrado.");
+    }
+}
+
+// Chama a função para criar os candidatos ao carregar a página
+document.addEventListener("DOMContentLoaded", () => {
+    // Exibir saudação personalizada
+    displayGreeting();
+
+    // Carregar candidatos
+    criarCandidatos();
+
+    // Verificar se o voto foi registrado
+    if (sessionStorage.getItem("votoRegistrado") === 'true') {
+        exibirNotificacao("Seu voto foi registrado com sucesso!");
+        // Opcional: redirecionar ou desabilitar a votação
+    }
+
+    // Configurar eventos dos botões
+    configurarConfirmarVoto();
+    configurarEventosBotoes();
+    configurarEventListeners();
 });
