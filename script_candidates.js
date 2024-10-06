@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Verificar se o CPF foi validado
     if (!isCpfValidado()) {
         showNotification("Sua validação expirou ou não foi realizada. Por favor, valide seu CPF.");
-        window.location.href = 'cpf_validation.html'; // Substitua pela página correta
+        window.location.href = 'index_base.html'; // Substitua pela página inicial correta
     } else {
         // Exibir saudação personalizada
         const saudacao = getSaudacao();
@@ -299,7 +299,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const cpf = sessionStorage.getItem("cpf"); // Ajuste conforme a implementação
                 if (!cpf) {
                     showNotification("CPF não encontrado. Por favor, valide seu CPF novamente.");
-                    window.location.href = 'cpf_validation.html'; // Substitua pelo URL correto
+                    window.location.href = 'index_base.html'; // Substitua pelo URL correto
                     return;
                 }
 
@@ -313,8 +313,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             } else {
                 showNotification("CPF não validado. Por favor, valide seu CPF antes de votar.");
-                // Redirecionar para a página de validação de CPF
-                window.location.href = 'cpf_validation.html'; // Substitua pelo URL correto
+                // Redirecionar para a página inicial de validação de CPF
+                window.location.href = 'index_base.html'; // Substitua pelo URL correto
             }
         });
     } else {
