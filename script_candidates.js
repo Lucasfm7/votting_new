@@ -341,3 +341,4 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarEventosBotoes();
     configurarEventListeners();
 });
+
