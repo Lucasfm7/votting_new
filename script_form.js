@@ -110,7 +110,7 @@ function displayGreeting() {
     const nomePessoa = sessionStorage.getItem("nomePessoa") || "";
     const empresaPessoa = sessionStorage.getItem("empresaPessoa") || "";
 
-    let mensagem = saudacao;
+    let mensagem = "Olá";
 
     if (empresaPessoa) {
         mensagem += `, ${empresaPessoa}`;
