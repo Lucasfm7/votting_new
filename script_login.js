@@ -1,3 +1,5 @@
+// script_login.js
+
 // Verificar se o usuário está logado
 if (!sessionStorage.getItem("resultadoLogado")) {
     // Redirecionar para a página principal se não estiver logado
@@ -54,8 +56,9 @@ async function carregarResultadosCandidatos() {
                     label: 'Percentual (%)',
                     data: percentuais,
                     backgroundColor: 'rgba(218, 165, 32, 1)',
-                    borderRadius: 20, // Maior curvatura nas pontas das barras
-                    barPercentage: 0.1, // Reduz ainda mais o tamanho das barras
+                    borderRadius: 10, // Maior curvatura nas pontas das barras
+                    barPercentage: 0.8, // Aumenta a largura das barras
+                    categoryPercentage: 0.9, // Ajusta a categoria para melhor espaçamento
                     borderSkipped: false // Para garantir bordas arredondadas em todas as partes
                 }]
             },
@@ -101,7 +104,10 @@ async function carregarResultadosCandidatos() {
                             display: false // Remove as linhas de grade do eixo Y
                         },
                         ticks: {
-                            padding: 10 // Adiciona espaço entre o nome e a barra
+                            padding: 10, // Adiciona espaço entre o nome e a barra
+                            font: {
+                                size: 14
+                            }
                         }
                     }
                 },

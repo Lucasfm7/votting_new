@@ -1,3 +1,5 @@
+/* style_login.css */
+
 /* Reset CSS */
 * {
     margin: 0;
@@ -57,7 +59,7 @@ body {
 /* Estilização do Gráfico */
 #candidatos-chart {
     max-width: 100%;
-    height: auto;
+    height: 400px; /* Aumenta a altura do gráfico */
 }
 
 /* Responsividade */
