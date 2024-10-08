@@ -6,6 +6,10 @@ if (!sessionStorage.getItem("resultadoLogado")) {
     window.location.href = 'index_base.html';
 }
 
+// Variáveis globais para armazenar votos e percentuais
+let votosGlobais = [];
+let percentuaisGlobais = [];
+
 // Função para carregar o percentual de votantes e o total de votos
 async function carregarPercentualVotantes() {
     const percentualText = document.getElementById('percentual-text');
@@ -43,11 +47,17 @@ async function carregarResultadosCandidatos() {
         const nomes = dados.map(candidato => candidato.candidate_nome);
         const votos = dados.map(candidato => candidato.total_votos);
 
+        // Armazenar votos globalmente para uso nos rótulos
+        votosGlobais = votos;
+
         // Calcular total de votos
         const totalVotos = votos.reduce((a, b) => a + b, 0);
 
         // Calcular percentual de cada candidato
         const percentuais = votos.map(voto => ((voto / totalVotos) * 100).toFixed(2));
+
+        // Armazenar percentuais globalmente para possíveis usos futuros
+        percentuaisGlobais = percentuais;
 
         // Configurar o gráfico
         const ctx = document.getElementById('candidatos-chart').getContext('2d');
@@ -62,7 +72,8 @@ async function carregarResultadosCandidatos() {
                     borderRadius: 10, // Maior curvatura nas pontas das barras
                     barPercentage: 0.8, // Aumenta a largura das barras
                     categoryPercentage: 0.9, // Ajusta a categoria para melhor espaçamento
-                    borderSkipped: false // Para garantir bordas arredondadas em todas as partes
+                    borderSkipped: false, // Para garantir bordas arredondadas em todas as partes
+                    votos: votos // Adiciona os votos como propriedade personalizada
                 }]
             },
             options: {
@@ -82,8 +93,10 @@ async function carregarResultadosCandidatos() {
                     datalabels: {
                         anchor: 'center', // Posiciona o rótulo no centro da barra
                         align: 'center', // Centraliza o rótulo
-                        formatter: function(value) {
-                            return value + '%'; // Exibir o percentual nas barras
+                        formatter: function(value, context) {
+                            const votos = context.dataset.votos[context.dataIndex];
+                            const textoVotos = votos === 1 ? `${votos} Voto` : `${votos} Votos`;
+                            return `${textoVotos} ➜ ${value}%`; // Exibir votos e percentual nas barras
                         },
                         color: '#fff', // Cor branca para contraste com o fundo da barra
                         font: {
