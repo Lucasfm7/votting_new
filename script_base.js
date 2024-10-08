@@ -1,4 +1,6 @@
-// script.js (First Page)
+// script_base.js
+
+// Função para exibir notificações
 function showNotification(message, isError = true) {
     const notificationBanner = document.getElementById("notificationBanner");
     notificationBanner.textContent = message;
@@ -15,6 +17,7 @@ function showNotification(message, isError = true) {
     }, 3000);
 }
 
+// Funções para mostrar e esconder elementos
 function showElement(element) {
     element.classList.remove("hidden");
     element.classList.add("show");
@@ -25,6 +28,7 @@ function hideElement(element) {
     element.classList.add("hidden");
 }
 
+// Função para buscar pessoa pelo CPF/CNPJ
 async function fetchPersonByCpf(cpf) {
     const baseUrl = "https://django-server-production-f3c5.up.railway.app/api/pessoas/pesquisar_cpf/";
     const cpfNumeros = cpf.replace(/\D/g, '');
@@ -66,18 +70,20 @@ async function fetchPersonByCpf(cpf) {
     }
 }
 
+// Função para resetar o estado do botão
 function resetButtonState() {
     spinner.classList.add("hidden");
     btnText.classList.remove("hidden");
     btnAvancar.disabled = false;
 }
 
+// Seleção de elementos do formulário de CPF/CNPJ
 const cpfForm = document.getElementById("cpfForm");
 const spinner = document.getElementById("spinner");
 const btnText = document.getElementById("btnText");
-const checkmark = document.getElementById("checkmark");
 const btnAvancar = document.getElementById("btnAvancar");
 
+// Manipulador de submissão do formulário de CPF/CNPJ
 cpfForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
@@ -89,7 +95,6 @@ cpfForm.addEventListener("submit", async function(event) {
 
     showElement(spinner);
     btnText.classList.add("hidden");
-    checkmark.classList.add("hidden");
     btnAvancar.disabled = true;
 
     try {
@@ -99,19 +104,16 @@ cpfForm.addEventListener("submit", async function(event) {
             const pessoa = response.data;
 
             hideElement(spinner);
-            showElement(checkmark);
 
-            // Store cpfCnpj in sessionStorage
+            // Armazenar informações no sessionStorage
             sessionStorage.setItem("cpfCnpj", cpfCnpj);
-
             sessionStorage.setItem("cpfValidado", true);
             sessionStorage.setItem("validacaoTime", new Date().getTime());
             sessionStorage.setItem("nomePessoa", pessoa.nome || '');
             sessionStorage.setItem("empresaPessoa", pessoa.empresa || '');
 
-            setTimeout(() => {
-                window.location.href = 'index_form.html'; // Redirect to the next page
-            }, 1000);
+            // Redirecionar para a próxima página imediatamente
+            window.location.href = 'index_form.html'; // Redirecionar para a próxima página
 
         } else if (response.status === 'ja_votou') {
             resetButtonState();
@@ -123,5 +125,95 @@ cpfForm.addEventListener("submit", async function(event) {
 
     } catch (error) {
         resetButtonState();
+    }
+});
+
+// Seleção de elementos do modal de Resultado
+const resultadoButton = document.querySelectorAll(".resultado-button");
+const resultadoModal = document.getElementById("resultadoModal");
+const btnCancelarResultado = document.getElementById("btnCancelarResultado");
+
+// Função para abrir o modal de Resultado
+function openResultadoModal() {
+    showElement(resultadoModal);
+}
+
+// Função para fechar o modal de Resultado
+function closeResultadoModal() {
+    hideElement(resultadoModal);
+}
+
+// Adicionar event listeners aos botões "Resultado"
+resultadoButton.forEach(button => {
+    button.addEventListener("click", openResultadoModal);
+});
+
+// Event listener para o botão "Cancelar" no modal de Resultado
+btnCancelarResultado.addEventListener("click", function() {
+    closeResultadoModal();
+});
+
+// Manipulador de submissão do formulário de login do Resultado
+const resultadoLoginForm = document.getElementById("resultadoLoginForm");
+
+resultadoLoginForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("resultadoUsername").value.trim();
+    const password = document.getElementById("resultadoPassword").value.trim();
+
+    if (username === "" || password === "") {
+        showNotification("Por favor, preencha todos os campos de login.");
+        return;
+    }
+
+    const loginButton = resultadoLoginForm.querySelector("button[type='submit']");
+
+    // Criar e exibir o spinner no botão de login
+    const loginSpinner = document.createElement("div");
+    loginSpinner.classList.add("spinner", "show");
+    loginButton.textContent = "";
+    loginButton.appendChild(loginSpinner);
+
+    try {
+        const response = await fetch('https://django-server-production-f3c5.up.railway.app/api/admin/login/', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+                sessionStorage.setItem("resultadoLogado", true);
+                sessionStorage.setItem("resultadoUsuario", username);
+
+                closeResultadoModal();
+
+                window.location.href = 'index_login.html';
+            } else {
+                showNotification("Usuário ou senha inválidos.");
+                loginButton.removeChild(loginSpinner);
+                loginButton.textContent = "Entrar";
+            }
+        } else {
+            showNotification("Erro na autenticação. Tente novamente mais tarde.");
+            loginButton.removeChild(loginSpinner);
+            loginButton.textContent = "Entrar";
+        }
+    } catch (error) {
+        console.error("Erro na requisição de login:", error);
+        showNotification("Erro ao tentar fazer login.");
+        loginButton.removeChild(loginSpinner);
+        loginButton.textContent = "Entrar";
+    }
+});
+
+// Função para fechar o modal ao clicar fora do conteúdo
+window.addEventListener("click", function(event) {
+    if (event.target === resultadoModal) {
+        closeResultadoModal();
     }
 });
