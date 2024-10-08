@@ -6,18 +6,21 @@ if (!sessionStorage.getItem("resultadoLogado")) {
     window.location.href = 'index_base.html';
 }
 
-// Função para carregar o percentual de votantes
+// Função para carregar o percentual de votantes e o total de votos
 async function carregarPercentualVotantes() {
     const percentualText = document.getElementById('percentual-text');
+    const totalVotantesText = document.getElementById('total-votantes-text');
     try {
         const response = await fetch('https://django-server-production-f3c5.up.railway.app/api/votos/percentual_votantes/');
         if (!response.ok) {
             throw new Error(`Erro: ${response.status} ${response.statusText}`);
         }
         const dados = await response.json();
+        totalVotantesText.textContent = `Total de Votantes: ${dados.total_votantes}`;
         percentualText.textContent = `Percentual de Votantes: ${dados.percentual_votantes}%`;
     } catch (error) {
-        console.error('Erro ao carregar o percentual de votantes:', error);
+        console.error('Erro ao carregar os dados de votantes:', error);
+        totalVotantesText.textContent = 'Não foi possível carregar o total de votantes.';
         percentualText.textContent = 'Não foi possível carregar o percentual de votantes.';
     }
 }

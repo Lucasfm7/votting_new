@@ -49,6 +49,7 @@ body {
 .percentual-container p {
     font-size: 18px;
     color: #333;
+    margin-bottom: 10px;
 }
 
 /* Seção de Candidatos */
@@ -70,6 +71,10 @@ body {
 
     .percentual-container p, .candidatos-container h2 {
         font-size: 16px;
+    }
+
+    #candidatos-chart {
+        height: 300px; /* Ajusta a altura para telas menores */
     }
 }
 
