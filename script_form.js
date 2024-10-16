@@ -166,7 +166,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
         btnText.classList.add("hidden");
 
         // Enviar os dados para o backend, incluindo o CPF/CNPJ
-        fetch('https://django-server-production-f3c5.up.railway.app/api/enviar_sms/', {
+        fetch('https://django-server-production-f3c5.up.railway.app/api/send_verification_code/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
