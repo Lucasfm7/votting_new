@@ -123,28 +123,25 @@ window.addEventListener("DOMContentLoaded", (event) => {
     // Função para processar o envio do formulário
     nameForm.addEventListener("submit", function (event) {
         event.preventDefault(); // Previne o comportamento padrão de envio do formulário
-
-        const nome = document.getElementById("nome").value.trim();
-        const sobrenome = document.getElementById("sobrenome").value.trim();
-        const telefoneInput = document.querySelector("#telefone");
-        const iti = window.intlTelInputGlobals.getInstance(telefoneInput);
-        const telefone = iti.getNumber(intlTelInputUtils.numberFormat.E164); // Obtém o número no formato E.164
-
-        // Validações básicas
-        if (nome === "" || sobrenome === "") {
-            showNotification("Por favor, preencha todos os campos.");
-            return;
+    
+        const nomeElement = document.getElementById("nome");
+        const sobrenomeElement = document.getElementById("sobrenome");
+        const telefoneInput = document.getElementById("telefone");
+    
+        // Verificar se os elementos existem
+        if (!nomeElement) {
+            console.error("Elemento 'nome' não encontrado.");
+        }
+        if (!sobrenomeElement) {
+            console.error("Elemento 'sobrenome' não encontrado.");
+        }
+        if (!telefoneInput) {
+            console.error("Elemento 'telefone' não encontrado.");
         }
 
-        if (!iti.isValidNumber()) {
-            showNotification("Por favor, insira um número de telefone válido.");
-            return;
-        }
-
-        // Armazena o nome, sobrenome e telefone no sessionStorage
-        sessionStorage.setItem("nome", nome);
-        sessionStorage.setItem("sobrenome", sobrenome);
-        sessionStorage.setItem("telefone", telefone);
+        sessionStorage.setItem("nome", nomeElement.value)
+        sessionStorage.setItem("sobrenome", sobrenomeElement.value)
+        sessionStorage.setItem("telefone", telefoneInput.value)
 
         // Recupera o CPF/CNPJ do sessionStorage
         const cpfCnpj = sessionStorage.getItem("cpfCnpj");
