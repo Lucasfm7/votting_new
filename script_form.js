@@ -172,10 +172,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                phone_number: telefone,
-                cpf_cnpj: cpfCnpj,
-                nome: nome,
-                sobrenome: sobrenome
+                phone_number: telefone
             }),
         })
         .then(response => response.json().then(data => ({ status: response.status, body: data })))
