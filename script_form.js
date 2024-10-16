@@ -122,13 +122,13 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
     // Função para processar o envio do formulário
     nameForm.addEventListener("submit", function (event) {
-        event.preventDefault(); // Previne o comportamento padrão de envio do formulário
-
+        event.preventDefault(); // Prevent the default form submission behavior
+    
         const nomeElement = document.getElementById("nome");
         const sobrenomeElement = document.getElementById("sobrenome");
         const telefoneInput = document.getElementById("telefone");
-
-        // Verificar se os elementos existem
+    
+        // Verify that the elements exist
         if (!nomeElement) {
             console.error("Elemento 'nome' não encontrado.");
         }
@@ -138,57 +138,70 @@ window.addEventListener("DOMContentLoaded", (event) => {
         if (!telefoneInput) {
             console.error("Elemento 'telefone' não encontrado.");
         }
-
+    
         // Retrieve the values from the input elements
         const nome = nomeElement.value;
         const sobrenome = sobrenomeElement.value;
         const telefone = telefoneInput.value;
-
+    
+        // Process the phone number
+        // Remove all non-digit characters
+        let digitsOnly = telefone.replace(/\D/g, '');
+        // Remove leading zeros
+        digitsOnly = digitsOnly.replace(/^0+/, '');
+        // Remove leading '55' if present
+        if (digitsOnly.startsWith('55')) {
+            digitsOnly = digitsOnly.substring(2);
+        }
+        // Prepend '+55' to the digits
+        let sanitizedTelefone = '+55' + digitsOnly;
+    
+        // Store the sanitized phone number and other details in sessionStorage
         sessionStorage.setItem("nome", nome);
         sessionStorage.setItem("sobrenome", sobrenome);
-        sessionStorage.setItem("telefone", telefone);
-
-        // Recupera o CPF/CNPJ do sessionStorage
+        sessionStorage.setItem("telefone", sanitizedTelefone);
+    
+        // Retrieve the CPF/CNPJ from sessionStorage
         const cpfCnpj = sessionStorage.getItem("cpfCnpj");
-
+    
         if (!cpfCnpj) {
             showNotification("CPF/CNPJ não encontrado. Por favor, reinicie o processo.");
             return;
         }
-
-        // Exibir animação de carregamento no botão
+    
+        // Show loading animation on the button
         const spinner = document.getElementById("spinner");
         const btnText = document.getElementById("btnText");
         const checkmark = document.getElementById("checkmark");
-
+    
         spinner.classList.remove("hidden");
         spinner.classList.add("show");
         btnText.classList.add("hidden");
-
-        // Enviar os dados para o backend, incluindo o CPF/CNPJ
+    
+        // Send the data to the backend, including the CPF/CNPJ
         fetch('https://django-server-production-f3c5.up.railway.app/api/send_verification_code/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                phone_number: telefone
+                phone_number: sanitizedTelefone
             }),
         })
         .then(response => response.json().then(data => ({ status: response.status, body: data })))
         .then(({ status, body }) => {
             if (status === 200) {
-                // Sucesso: mostrar o checkmark e redirecionar
+                // Success: show the checkmark and redirect
                 spinner.classList.add("hidden");
                 checkmark.classList.remove("hidden");
                 checkmark.classList.add("show");
-
-                // Redireciona para a página de verificação de código após um breve intervalo
+    
+                // Redirect to the code verification page after a brief interval
                 setTimeout(() => {
                     window.location.href = "index_code.html";
-                }, 1000); // Aguarda 1 segundo para mostrar o checkmark
+                }, 1000); // Waits 1 second to show the checkmark
             } else {
-                // Erro: mostrar a mensagem de erro
+                // Error: show the error message
                 spinner.classList.add("hidden");
                 btnText.classList.remove("hidden");
                 showNotification(body.detail || "Erro ao enviar o código de verificação.");
