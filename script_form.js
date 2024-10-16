@@ -123,11 +123,11 @@ window.addEventListener("DOMContentLoaded", (event) => {
     // Função para processar o envio do formulário
     nameForm.addEventListener("submit", function (event) {
         event.preventDefault(); // Previne o comportamento padrão de envio do formulário
-    
+
         const nomeElement = document.getElementById("nome");
         const sobrenomeElement = document.getElementById("sobrenome");
         const telefoneInput = document.getElementById("telefone");
-    
+
         // Verificar se os elementos existem
         if (!nomeElement) {
             console.error("Elemento 'nome' não encontrado.");
@@ -139,9 +139,14 @@ window.addEventListener("DOMContentLoaded", (event) => {
             console.error("Elemento 'telefone' não encontrado.");
         }
 
-        sessionStorage.setItem("nome", nomeElement.value)
-        sessionStorage.setItem("sobrenome", sobrenomeElement.value)
-        sessionStorage.setItem("telefone", telefoneInput.value)
+        // Retrieve the values from the input elements
+        const nome = nomeElement.value;
+        const sobrenome = sobrenomeElement.value;
+        const telefone = telefoneInput.value;
+
+        sessionStorage.setItem("nome", nome);
+        sessionStorage.setItem("sobrenome", sobrenome);
+        sessionStorage.setItem("telefone", telefone);
 
         // Recupera o CPF/CNPJ do sessionStorage
         const cpfCnpj = sessionStorage.getItem("cpfCnpj");
