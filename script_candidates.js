@@ -113,30 +113,17 @@ function fecharModalConfirmacao() {
     }
 }
 
-async function registrarVoto(cpf, candidateId) {
+async function registrarVoto(cpf, candidateId, nome, sobrenome, telefone) {
     const API_URL_VOTOS = "https://django-server-production-f3c5.up.railway.app/api/votos/";
     try {
         // Sanitiza o CPF antes de enviar
-        const cpfSanitized = cpf.replace(/\D/g, '');
-        const nome = sessionStorage.getItem("nome");
-        const sobrenome = sessionStorage.getItem("sobrenome");
-        const telefone = sessionStorage.getItem("telefone");
-
-        // Log dos dados sendo enviados
-        console.log("Enviando dados para registrar voto:");
-        console.log("CPF:", cpfSanitized);
-        console.log("Candidato ID:", candidateId);
-        console.log("Nome:", nome);
-        console.log("Sobrenome:", sobrenome);
-        console.log("Telefone:", telefone);
-
         const response = await fetch(API_URL_VOTOS, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                cpf: cpfSanitized,
+                cpf: cpf,
                 candidate_id: candidateId,
                 nome: nome,
                 sobrenome: sobrenome,
@@ -193,6 +180,9 @@ function configurarConfirmarVoto() {
     if (confirmarVotoButton) {
         confirmarVotoButton.addEventListener("click", () => {
             let cpf = sessionStorage.getItem("cpfCnpj");
+            let nome = sessionStorage.getItem("nome");
+            let sobrenome = sessionStorage.getItem("sobrenome");
+            let telefone = sessionStorage.getItem("telefone");
             if (!cpf) {
                 exibirNotificacao("CPF não encontrado. Por favor, valide seu CPF novamente.");
                 window.location.href = 'index.html';
@@ -203,7 +193,7 @@ function configurarConfirmarVoto() {
 
             const candidateId = candidatoSelecionado ? candidatoSelecionado.dataset.id : null;
             if (candidateId) {
-                registrarVoto(cpf, candidateId);
+                registrarVoto(cpf, candidateId, nome, sobrenome, telefone);
                 fecharModalConfirmacao();
             } else {
                 exibirNotificacao("Nenhum candidato selecionado.");
