@@ -161,43 +161,43 @@ window.addEventListener("DOMContentLoaded", (event) => {
         btnText.classList.add("hidden");
 
         // Enviar os dados para o backend, incluindo o CPF/CNPJ
-        // fetch('https://django-server-production-f3c5.up.railway.app/api/send_verification_code/', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({
-        //         phone_number: telefone,
-        //         cpf_cnpj: cpfCnpj,
-        //         nome: nome,
-        //         sobrenome: sobrenome
-        //     }),
-        // })
-        // .then(response => response.json().then(data => ({ status: response.status, body: data })))
-        // .then(({ status, body }) => {
-        //     if (status === 200) {
-        //         // Sucesso: mostrar o checkmark e redirecionar
-        //         spinner.classList.add("hidden");
-        //         checkmark.classList.remove("hidden");
-        //         checkmark.classList.add("show");
+        fetch('https://django-server-production-f3c5.up.railway.app/api/send_verification_code/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                phone_number: telefone,
+                cpf_cnpj: cpfCnpj,
+                nome: nome,
+                sobrenome: sobrenome
+            }),
+        })
+        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+        .then(({ status, body }) => {
+            if (status === 200) {
+                // Sucesso: mostrar o checkmark e redirecionar
+                spinner.classList.add("hidden");
+                checkmark.classList.remove("hidden");
+                checkmark.classList.add("show");
 
-        //         // Redireciona para a página de verificação de código após um breve intervalo
-        //         setTimeout(() => {
-        //             window.location.href = "index_code.html";
-        //         }, 1000); // Aguarda 1 segundo para mostrar o checkmark
-        //     } else {
-        //         // Erro: mostrar a mensagem de erro
-        //         spinner.classList.add("hidden");
-        //         btnText.classList.remove("hidden");
-        //         showNotification(body.detail || "Erro ao enviar o código de verificação.");
-        //     }
-        // })
-        // .catch(error => {
-        //     console.error('Erro na requisição:', error);
-        //     spinner.classList.add("hidden");
-        //     btnText.classList.remove("hidden");
-        //     showNotification("Erro ao enviar o código de verificação.");
-        // });
+                // Redireciona para a página de verificação de código após um breve intervalo
+                setTimeout(() => {
+                    window.location.href = "index_code.html";
+                }, 1000); // Aguarda 1 segundo para mostrar o checkmark
+            } else {
+                // Erro: mostrar a mensagem de erro
+                spinner.classList.add("hidden");
+                btnText.classList.remove("hidden");
+                showNotification(body.detail || "Erro ao enviar o código de verificação.");
+            }
+        })
+        .catch(error => {
+            console.error('Erro na requisição:', error);
+            spinner.classList.add("hidden");
+            btnText.classList.remove("hidden");
+            showNotification("Erro ao enviar o código de verificação.");
+        });
     });
 });
 
