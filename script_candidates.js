@@ -234,17 +234,22 @@ function configurarEventListeners() {
 
 document.addEventListener("DOMContentLoaded", () => {
     let cpfCnpj = sessionStorage.getItem("cpfCnpj");
-    if (!cpfCnpj) {
-        exibirNotificacao("CPF não encontrado. Por favor, valide seu CPF novamente.");
+    let nome = sessionStorage.getItem("nome");
+    let sobrenome = sessionStorage.getItem("sobrenome");
+    let telefone = sessionStorage.getItem("telefone");
+
+    // Log the retrieved values
+    console.log("CPF/CNPJ:", cpfCnpj);
+    console.log("Nome:", nome);
+    console.log("Sobrenome:", sobrenome);
+    console.log("Telefone:", telefone);
+
+    // Handle missing data
+    if (!cpfCnpj || !nome || !sobrenome || !telefone) {
+        exibirNotificacao("Dados não encontrados. Por favor, reinicie o processo.");
         window.location.href = 'index.html';
         return;
-    }
-
-    // Sanitize the CPF
-    cpfCnpj = cpfCnpj.replace(/\D/g, '');
-
-    // Log the sanitized CPF
-    console.log(`CPF armazenado (sanitized): ${cpfCnpj}`);
+    };
 
     criarCandidatos();
     configurarConfirmarVoto();

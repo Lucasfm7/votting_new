@@ -165,9 +165,10 @@ document.getElementById("nameForm").addEventListener("submit", function (event) 
         return;
     }
 
-    // Armazena o nome e sobrenome no sessionStorage
+    // Armazena o nome, sobrenome e telefone no sessionStorage
     sessionStorage.setItem("nome", nome);
     sessionStorage.setItem("sobrenome", sobrenome);
+    sessionStorage.setItem("telefone", telefone);
 
     // Recupera o CPF/CNPJ do sessionStorage
     const cpfCnpj = sessionStorage.getItem("cpfCnpj");
@@ -206,9 +207,6 @@ document.getElementById("nameForm").addEventListener("submit", function (event) 
             spinner.classList.add("hidden");
             checkmark.classList.remove("hidden");
             checkmark.classList.add("show");
-
-            // Armazena o número de telefone no sessionStorage para uso na verificação
-            sessionStorage.setItem("telefone", telefone);
 
             // Redireciona para a página de verificação de código após um breve intervalo
             setTimeout(() => {
