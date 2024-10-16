@@ -165,6 +165,10 @@ document.getElementById("nameForm").addEventListener("submit", function (event) 
         return;
     }
 
+    // Armazena o nome e sobrenome no sessionStorage
+    sessionStorage.setItem("nome", nome);
+    sessionStorage.setItem("sobrenome", sobrenome);
+
     // Recupera o CPF/CNPJ do sessionStorage
     const cpfCnpj = sessionStorage.getItem("cpfCnpj");
 

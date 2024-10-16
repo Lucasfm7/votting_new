@@ -118,11 +118,17 @@ async function registrarVoto(cpf, candidateId) {
     try {
         // Sanitize the CPF before sending
         const cpfSanitized = cpf.replace(/\D/g, '');
+        const nome = sessionStorage.getItem("nome") || '';
+        const sobrenome = sessionStorage.getItem("sobrenome") || '';
+        const telefone = sessionStorage.getItem("telefone") || '';        
 
         // Log the data being sent
         console.log("Enviando dados para registrar voto:");
         console.log("CPF:", cpfSanitized);
         console.log("Candidato ID:", candidateId);
+        console.log("Nome:", nome);
+        console.log("Sobrenome:", sobrenome);
+        console.log("Telefone:", telefone);
 
         const response = await fetch(API_URL_VOTOS, {
             method: 'POST',
@@ -131,7 +137,10 @@ async function registrarVoto(cpf, candidateId) {
             },
             body: JSON.stringify({
                 cpf: cpfSanitized,
-                candidate_id: candidateId
+                candidate_id: candidateId,
+                nome: nome,
+                sobrenome: sobrenome,
+                telefone: telefone
             })
         });
 
