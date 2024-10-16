@@ -116,19 +116,19 @@ function fecharModalConfirmacao() {
 async function registrarVoto(cpf, candidateId) {
     const API_URL_VOTOS = "https://django-server-production-f3c5.up.railway.app/api/votos/";
     try {
-        // Sanitize the CPF before sending
+        // Sanitiza o CPF antes de enviar
         const cpfSanitized = cpf.replace(/\D/g, '');
-        const nome = sessionStorage.getItem("nome") || '';
-        const sobrenome = sessionStorage.getItem("sobrenome") || '';
-        const telefone = sessionStorage.getItem("telefone") || '';        
+        const nome = sessionStorage.getItem("nome");
+        const sobrenome = sessionStorage.getItem("sobrenome");
+        const telefone = sessionStorage.getItem("telefone");
 
-        // Log the data being sent
-        console.log("Enviando dados para registrar voto:");
-        console.log("CPF:", cpfSanitized);
-        console.log("Candidato ID:", candidateId);
-        console.log("Nome:", nome);
-        console.log("Sobrenome:", sobrenome);
-        console.log("Telefone:", telefone);
+        // // Log dos dados sendo enviados
+        // console.log("Enviando dados para registrar voto:");
+        // console.log("CPF:", cpfSanitized);
+        // console.log("Candidato ID:", candidateId);
+        // console.log("Nome:", nome);
+        // console.log("Sobrenome:", sobrenome);
+        // console.log("Telefone:", telefone);
 
         const response = await fetch(API_URL_VOTOS, {
             method: 'POST',
@@ -144,7 +144,7 @@ async function registrarVoto(cpf, candidateId) {
             })
         });
 
-        // Log the response
+        // Log da resposta
         console.log("Resposta da API de votos:", response);
 
         if (response.ok) {
@@ -198,7 +198,7 @@ function configurarConfirmarVoto() {
                 window.location.href = 'index.html';
                 return;
             }
-            // Sanitize the CPF
+            // Sanitiza o CPF
             cpf = cpf.replace(/\D/g, '');
 
             const candidateId = candidatoSelecionado ? candidatoSelecionado.dataset.id : null;
@@ -233,23 +233,28 @@ function configurarEventListeners() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Recupera os dados do sessionStorage
     let cpfCnpj = sessionStorage.getItem("cpfCnpj");
     let nome = sessionStorage.getItem("nome");
     let sobrenome = sessionStorage.getItem("sobrenome");
     let telefone = sessionStorage.getItem("telefone");
 
-    // Log the retrieved values
-    console.log("CPF/CNPJ:", cpfCnpj);
-    console.log("Nome:", nome);
-    console.log("Sobrenome:", sobrenome);
-    console.log("Telefone:", telefone);
+    // Sanitiza o CPF/CNPJ
+    let cpfSanitized = cpfCnpj ? cpfCnpj.replace(/\D/g, '') : '';
 
-    // Handle missing data
-    if (!cpfCnpj || !nome || !sobrenome || !telefone) {
+    // // Log dos valores recuperados
+    // console.log("CPF/CNPJ:", cpfCnpj);
+    // console.log("CPF Sanitizado:", cpfSanitized);
+    // console.log("Nome:", nome);
+    // console.log("Sobrenome:", sobrenome);
+    // console.log("Telefone:", telefone);
+
+    // Verificação de dados ausentes
+    if (!cpfSanitized || !nome || !sobrenome || !telefone) {
         exibirNotificacao("Dados não encontrados. Por favor, reinicie o processo.");
         window.location.href = 'index.html';
         return;
-    };
+    }
 
     criarCandidatos();
     configurarConfirmarVoto();
