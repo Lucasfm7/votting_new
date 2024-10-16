@@ -122,13 +122,13 @@ async function registrarVoto(cpf, candidateId) {
         const sobrenome = sessionStorage.getItem("sobrenome");
         const telefone = sessionStorage.getItem("telefone");
 
-        // // Log dos dados sendo enviados
-        // console.log("Enviando dados para registrar voto:");
-        // console.log("CPF:", cpfSanitized);
-        // console.log("Candidato ID:", candidateId);
-        // console.log("Nome:", nome);
-        // console.log("Sobrenome:", sobrenome);
-        // console.log("Telefone:", telefone);
+        // Log dos dados sendo enviados
+        console.log("Enviando dados para registrar voto:");
+        console.log("CPF:", cpfSanitized);
+        console.log("Candidato ID:", candidateId);
+        console.log("Nome:", nome);
+        console.log("Sobrenome:", sobrenome);
+        console.log("Telefone:", telefone);
 
         const response = await fetch(API_URL_VOTOS, {
             method: 'POST',
@@ -242,12 +242,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Sanitiza o CPF/CNPJ
     let cpfSanitized = cpfCnpj ? cpfCnpj.replace(/\D/g, '') : '';
 
-    // // Log dos valores recuperados
-    // console.log("CPF/CNPJ:", cpfCnpj);
-    // console.log("CPF Sanitizado:", cpfSanitized);
-    // console.log("Nome:", nome);
-    // console.log("Sobrenome:", sobrenome);
-    // console.log("Telefone:", telefone);
+    // Log dos valores recuperados
+    console.log("CPF/CNPJ:", cpfCnpj);
+    console.log("CPF Sanitizado:", cpfSanitized);
+    console.log("Nome:", nome);
+    console.log("Sobrenome:", sobrenome);
+    console.log("Telefone:", telefone);
 
     // Verificação de dados ausentes
     if (!cpfSanitized || !nome || !sobrenome || !telefone) {
