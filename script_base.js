@@ -1,7 +1,7 @@
 // script_base.js
 
 // Função para exibir notificações
-function showNotification(message, type = "error") { // Alterado para aceitar tipos: "error", "success", "closed"
+function showNotification(message, type = "error") { // Tipos: "error", "success", "closed"
     const notificationBanner = document.getElementById("notificationBanner");
     notificationBanner.textContent = message;
     notificationBanner.classList.remove("hidden", "success", "error", "closed");
@@ -28,48 +28,6 @@ function hideElement(element) {
     element.classList.add("hidden");
 }
 
-// Função para buscar pessoa pelo CPF/CNPJ
-async function fetchPersonByCpf(cpf) {
-    const baseUrl = "https://django-server-production-f3c5.up.railway.app/api/pessoas/pesquisar_cpf/";
-    const cpfNumeros = cpf.replace(/\D/g, '');
-
-    try {
-        const response = await fetch(`${baseUrl}?cpf=${cpfNumeros}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            },
-        });
-
-        if (!response.ok) {
-            if (response.status === 403) {
-                return { status: 'error', message: "Acesso negado. Verifique suas permissões ou se o CSRF está correto." };
-            } else if (response.status === 404) {
-                return { status: 'error', message: "CPF não encontrado." };
-            } else {
-                return { status: 'error', message: `Erro HTTP! Status: ${response.status}` };
-            }
-        }
-
-        const data = await response.json();
-        console.log("Dados recebidos da API:", data);
-
-        const jaVotou = data.ja_votou;
-        const jaVotouInterpretado = jaVotou === true || jaVotou === 1 || jaVotou === '1';
-
-        if (jaVotouInterpretado) {
-            showNotification("Você já votou e não pode votar novamente.", "error");
-            return { status: 'ja_votou' };
-        }
-
-        return { status: 'success', data };
-
-    } catch (error) {
-        console.error("Erro ao realizar a requisição:", error);
-        return { status: 'error', message: `Erro ao buscar CPF. ${error.message}` };
-    }
-}
-
 // Função para resetar o estado do botão
 function resetButtonState() {
     spinner.classList.add("hidden");
@@ -84,7 +42,7 @@ const btnText = document.getElementById("btnText");
 const btnAvancar = document.getElementById("btnAvancar");
 
 // Manipulador de submissão do formulário de CPF/CNPJ
-cpfForm.addEventListener("submit", async function(event) {
+cpfForm.addEventListener("submit", function(event) {
     event.preventDefault();
 
     const cpfCnpj = document.getElementById("cpfCnpj").value.trim();
@@ -93,39 +51,18 @@ cpfForm.addEventListener("submit", async function(event) {
         return;
     }
 
+    // Opcional: Mostrar spinner e desabilitar botão se desejar
     showElement(spinner);
     btnText.classList.add("hidden");
     btnAvancar.disabled = true;
 
-    try {
-        const response = await fetchPersonByCpf(cpfCnpj);
+    // Exibir a mensagem "Votação encerrada..." com fundo dourado
+    showNotification("Votação encerrada, gentileza aguardar o resultado!", "closed");
 
-        if (response.status === 'success') {
-            const pessoa = response.data;
-
-            hideElement(spinner);
-
-            // Armazenar informações no sessionStorage
-            sessionStorage.setItem("cpfCnpj", cpfCnpj);
-            sessionStorage.setItem("cpfValidado", true);
-            sessionStorage.setItem("validacaoTime", new Date().getTime());
-            sessionStorage.setItem("nomePessoa", pessoa.nome || '');
-            sessionStorage.setItem("empresaPessoa", pessoa.empresa || '');
-
-            // Redirecionar para a próxima página imediatamente
-            window.location.href = 'index_form.html'; // Redirecionar para a próxima página
-
-        } else if (response.status === 'ja_votou') {
-            resetButtonState();
-
-        } else if (response.status === 'error') {
-            resetButtonState();
-            showNotification(response.message, "error");
-        }
-
-    } catch (error) {
+    // Resetar o estado do botão após exibir a notificação
+    setTimeout(() => {
         resetButtonState();
-    }
+    }, 3000); // Tempo igual ao da notificação para consistência visual
 });
 
 // Seleção de elementos do modal de Resultado
@@ -217,25 +154,3 @@ window.addEventListener("click", function(event) {
         closeResultadoModal();
     }
 });
-
-// ---------------------------------------------
-// Atualização Solicitada: Interceptar o botão "Entrar" fora do modal "Resultado"
-// ---------------------------------------------
-
-// Seleção do botão "Entrar" que não está no modal "Resultado"
-// Supondo que o botão tenha o ID "btnEntrar". Ajuste conforme necessário.
-const btnEntrar = document.getElementById("btnEntrar");
-
-if (btnEntrar) {
-    btnEntrar.addEventListener("click", function(event) {
-        event.preventDefault(); // Impede a ação padrão do botão
-
-        // Exibe a mensagem "Votação encerrada, gentileza aguardar o resultado!" com fundo dourado
-        showNotification("Votação encerrada, gentileza aguardar o resultado!", "closed");
-    });
-}
-
-// ---------------------------------------------
-// Fim da Atualização
-// ---------------------------------------------
-
