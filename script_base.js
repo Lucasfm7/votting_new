@@ -156,59 +156,12 @@ btnCancelarResultado.addEventListener("click", function() {
 // Manipulador de submissão do formulário de login do Resultado
 const resultadoLoginForm = document.getElementById("resultadoLoginForm");
 
-resultadoLoginForm.addEventListener("submit", async function(event) {
+// Atualização: Modificado para exibir mensagem de votação encerrada
+resultadoLoginForm.addEventListener("submit", function(event) {
     event.preventDefault();
 
-    const username = document.getElementById("resultadoUsername").value.trim();
-    const password = document.getElementById("resultadoPassword").value.trim();
-
-    if (username === "" || password === "") {
-        showNotification("Por favor, preencha todos os campos de login.");
-        return;
-    }
-
-    const loginButton = resultadoLoginForm.querySelector("button[type='submit']");
-
-    // Criar e exibir o spinner no botão de login
-    const loginSpinner = document.createElement("div");
-    loginSpinner.classList.add("spinner", "show");
-    loginButton.textContent = "";
-    loginButton.appendChild(loginSpinner);
-
-    try {
-        const response = await fetch('https://django-server-production-f3c5.up.railway.app/api/admin/login/', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json' 
-            },
-            body: JSON.stringify({ username, password })
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            if (result.success) {
-                sessionStorage.setItem("resultadoLogado", true);
-                sessionStorage.setItem("resultadoUsuario", username);
-
-                closeResultadoModal();
-
-                window.location.href = 'index_login.html';
-            } else {
-                showNotification("Usuário ou senha inválidos.");
-                loginButton.removeChild(loginSpinner);
-                loginButton.textContent = "Entrar";
-            }
-        } else {
-            showNotification("Erro na autenticação. Tente novamente mais tarde.");
-            loginButton.removeChild(loginSpinner);
-            loginButton.textContent = "Entrar";
-        }
-    } catch (error) {
-        console.error("Erro na requisição de login:", error);
-        showNotification("Erro ao tentar fazer login.");
-        loginButton.removeChild(loginSpinner);
-        loginButton.textContent = "Entrar";
-    }
+    // Exibir a mensagem de votação encerrada
+    showNotification("Votação encerrada, gentileza aguardar o resultado!", true);
 });
 
 // Função para fechar o modal ao clicar fora do conteúdo
