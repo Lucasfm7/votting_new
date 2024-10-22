@@ -1,11 +1,11 @@
 // script_base.js
 
 // Função para exibir notificações
-function showNotification(message, isError = true) {
+function showNotification(message, type = "error") { // Alterado para aceitar tipos: "error", "success", "closed"
     const notificationBanner = document.getElementById("notificationBanner");
     notificationBanner.textContent = message;
-    notificationBanner.classList.remove("hidden", "success", "error");
-    notificationBanner.classList.add("show", isError ? "error" : "success");
+    notificationBanner.classList.remove("hidden", "success", "error", "closed");
+    notificationBanner.classList.add("show", type);
 
     setTimeout(() => {
         notificationBanner.classList.remove("show");
@@ -58,7 +58,7 @@ async function fetchPersonByCpf(cpf) {
         const jaVotouInterpretado = jaVotou === true || jaVotou === 1 || jaVotou === '1';
 
         if (jaVotouInterpretado) {
-            showNotification("Você já votou e não pode votar novamente.", true);
+            showNotification("Você já votou e não pode votar novamente.", "error");
             return { status: 'ja_votou' };
         }
 
@@ -89,7 +89,7 @@ cpfForm.addEventListener("submit", async function(event) {
 
     const cpfCnpj = document.getElementById("cpfCnpj").value.trim();
     if (cpfCnpj === "") {
-        showNotification("Por favor, insira um CPF ou CNPJ.");
+        showNotification("Por favor, insira um CPF ou CNPJ.", "error");
         return;
     }
 
@@ -120,7 +120,7 @@ cpfForm.addEventListener("submit", async function(event) {
 
         } else if (response.status === 'error') {
             resetButtonState();
-            showNotification(response.message);
+            showNotification(response.message, "error");
         }
 
     } catch (error) {
@@ -156,12 +156,59 @@ btnCancelarResultado.addEventListener("click", function() {
 // Manipulador de submissão do formulário de login do Resultado
 const resultadoLoginForm = document.getElementById("resultadoLoginForm");
 
-// Atualização: Modificado para exibir mensagem de votação encerrada
-resultadoLoginForm.addEventListener("submit", function(event) {
+resultadoLoginForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
-    // Exibir a mensagem de votação encerrada
-    showNotification("Votação encerrada, gentileza aguardar o resultado!", true);
+    const username = document.getElementById("resultadoUsername").value.trim();
+    const password = document.getElementById("resultadoPassword").value.trim();
+
+    if (username === "" || password === "") {
+        showNotification("Por favor, preencha todos os campos de login.", "error");
+        return;
+    }
+
+    const loginButton = resultadoLoginForm.querySelector("button[type='submit']");
+
+    // Criar e exibir o spinner no botão de login
+    const loginSpinner = document.createElement("div");
+    loginSpinner.classList.add("spinner", "show");
+    loginButton.textContent = "";
+    loginButton.appendChild(loginSpinner);
+
+    try {
+        const response = await fetch('https://django-server-production-f3c5.up.railway.app/api/admin/login/', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+                sessionStorage.setItem("resultadoLogado", true);
+                sessionStorage.setItem("resultadoUsuario", username);
+
+                closeResultadoModal();
+
+                window.location.href = 'index_login.html';
+            } else {
+                showNotification("Usuário ou senha inválidos.", "error");
+                loginButton.removeChild(loginSpinner);
+                loginButton.textContent = "Entrar";
+            }
+        } else {
+            showNotification("Erro na autenticação. Tente novamente mais tarde.", "error");
+            loginButton.removeChild(loginSpinner);
+            loginButton.textContent = "Entrar";
+        }
+    } catch (error) {
+        console.error("Erro na requisição de login:", error);
+        showNotification("Erro ao tentar fazer login.", "error");
+        loginButton.removeChild(loginSpinner);
+        loginButton.textContent = "Entrar";
+    }
 });
 
 // Função para fechar o modal ao clicar fora do conteúdo
@@ -170,3 +217,25 @@ window.addEventListener("click", function(event) {
         closeResultadoModal();
     }
 });
+
+// ---------------------------------------------
+// Atualização Solicitada: Interceptar o botão "Entrar" fora do modal "Resultado"
+// ---------------------------------------------
+
+// Seleção do botão "Entrar" que não está no modal "Resultado"
+// Supondo que o botão tenha o ID "btnEntrar". Ajuste conforme necessário.
+const btnEntrar = document.getElementById("btnEntrar");
+
+if (btnEntrar) {
+    btnEntrar.addEventListener("click", function(event) {
+        event.preventDefault(); // Impede a ação padrão do botão
+
+        // Exibe a mensagem "Votação encerrada, gentileza aguardar o resultado!" com fundo dourado
+        showNotification("Votação encerrada, gentileza aguardar o resultado!", "closed");
+    });
+}
+
+// ---------------------------------------------
+// Fim da Atualização
+// ---------------------------------------------
+
